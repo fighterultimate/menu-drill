@@ -1,0 +1,1548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Menu Drill">
+<meta name="theme-color" content="#142A44">
+<style>
+  html{color-scheme:light dark}
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<title>Earls Menu Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Source+Sans+3:wght@400;600&display=swap">
+
+<style>
+:root{
+  --navy:#142A44; --navy-2:#1E3A5C; --coral:#E0543A; --teal:#2E8F86; --amber:#C9791B;
+  --paper:#F2F4F7; --surface:#FFFFFF; --surface-2:#E9EDF2; --line:#D3DBE4;
+  --ink:#142A44; --ink-2:#4A5C72; --ink-3:#7C8CA1;
+  --chip-bg:#E9EDF2; --chip-line:#C8D2DE;
+  --ok:#2E8F86; --ok-bg:#E2F1EF; --miss:#C9791B; --miss-bg:#FBEEDC;
+  --focus:#E0543A;
+  --r-s:6px; --r-m:10px; --r-l:16px;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Source Sans 3","Helvetica Neue",Arial,sans-serif;
+  --bar-h:118px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D1725; --surface:#152436; --surface-2:#1D3044; --line:#2A415B;
+    --ink:#E8EEF5; --ink-2:#A9BACD; --ink-3:#7A8DA3;
+    --chip-bg:#1D3044; --chip-line:#33506E;
+    --coral:#FF7355; --teal:#4FBFB3; --amber:#E9A649;
+    --ok:#4FBFB3; --ok-bg:#123430; --miss:#E9A649; --miss-bg:#3A2A10;
+    --focus:#FF7355;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D1725; --surface:#152436; --surface-2:#1D3044; --line:#2A415B;
+  --ink:#E8EEF5; --ink-2:#A9BACD; --ink-3:#7A8DA3;
+  --chip-bg:#1D3044; --chip-line:#33506E;
+  --coral:#FF7355; --teal:#4FBFB3; --amber:#E9A649;
+  --ok:#4FBFB3; --ok-bg:#123430; --miss:#E9A649; --miss-bg:#3A2A10;
+  --focus:#FF7355;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--f-body); font-size:16px; line-height:1.5;
+  -webkit-text-size-adjust:100%; overscroll-behavior-y:none;
+}
+button{font:inherit; color:inherit; cursor:pointer}
+:focus-visible{outline:3px solid var(--focus); outline-offset:2px; border-radius:4px}
+.eyebrow{font-family:var(--f-display); font-weight:600; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3)}
+.num{font-variant-numeric:tabular-nums}
+.hidden{display:none !important}
+
+/* ---------- shell ---------- */
+.wrap{max-width:760px; margin:0 auto; padding-inline:16px; padding-block:0 calc(var(--bar-h) + 20px)}
+
+header.top{
+  position:sticky; top:0; z-index:30; background:var(--paper);
+  border-bottom:1px solid var(--line);
+  padding-block:10px 8px;
+}
+.top-row{display:flex; align-items:center; gap:10px}
+.brandmark{
+  width:30px; height:30px; border-radius:var(--r-s); background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-family:var(--f-display); font-weight:800;
+  font-size:13px; flex:none; letter-spacing:.02em;
+}
+:root[data-theme="dark"] .brandmark, :root:not([data-theme="light"]) .brandmark{background:var(--navy-2)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .brandmark{background:var(--navy)}}
+.brand-txt{min-width:0; flex:1}
+.brand-txt b{display:block; font-family:var(--f-display); font-weight:800; font-size:15px;
+  letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.brand-txt span{display:block; font-size:11.5px; color:var(--ink-3); white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis}
+.icon-btn{
+  width:38px; height:38px; flex:none; border:1px solid var(--line); background:var(--surface);
+  border-radius:var(--r-m); display:grid; place-items:center; padding:0;
+}
+.icon-btn:active{background:var(--surface-2)}
+.icon-btn svg{width:19px; height:19px; stroke:var(--ink-2); fill:none; stroke-width:1.9;
+  stroke-linecap:round; stroke-linejoin:round}
+
+.meter{margin-top:8px; height:5px; background:var(--surface-2); border-radius:99px; overflow:hidden;
+  display:flex; gap:1.5px}
+.meter i{display:block; height:100%; transition:width .3s ease}
+.meter .m-ok{background:var(--ok)}
+.meter .m-miss{background:var(--miss)}
+.meter-labels{display:flex; justify-content:space-between; margin-top:5px; gap:10px}
+.meter-labels span{font-size:11.5px; color:var(--ink-3)}
+.meter-labels b{font-weight:600; color:var(--ink-2)}
+
+/* ---------- home ---------- */
+.home{padding-top:18px; display:flex; flex-direction:column; gap:18px}
+.hero h1{
+  font-family:var(--f-display); font-weight:800; font-size:clamp(26px,7vw,38px);
+  line-height:1.05; letter-spacing:-.02em; margin:6px 0 0; text-wrap:balance;
+}
+.hero p{margin:8px 0 0; color:var(--ink-2); max-width:56ch}
+.stats{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
+.stat{
+  border:1px solid var(--line); background:var(--surface); border-radius:var(--r-m);
+  padding:8px 12px; display:flex; align-items:baseline; gap:7px;
+}
+.stat b{font-family:var(--f-display); font-weight:800; font-size:19px; font-variant-numeric:tabular-nums}
+.stat span{font-size:11.5px; color:var(--ink-3); letter-spacing:.04em; text-transform:uppercase}
+
+.start-block{display:flex; flex-direction:column; gap:8px}
+.btn{
+  border:1px solid var(--line); background:var(--surface); border-radius:var(--r-m);
+  padding:13px 16px; text-align:left; display:flex; align-items:center; gap:12px;
+  font-family:var(--f-body); width:100%;
+}
+.btn:active{transform:translateY(1px)}
+a.btn{text-decoration:none; color:inherit}
+.btn .lede{flex:1; min-width:0}
+.btn .lede b{display:block; font-family:var(--f-display); font-weight:600; font-size:15.5px}
+.btn .lede span{display:block; font-size:12.5px; color:var(--ink-3); line-height:1.35}
+.btn.primary{background:var(--coral); border-color:var(--coral); color:#fff}
+.btn.primary .lede span{color:rgba(255,255,255,.86)}
+.btn.primary .kbd{background:rgba(255,255,255,.2); color:#fff; border-color:transparent}
+.kbd{font-family:var(--f-display); font-size:11px; font-weight:600; letter-spacing:.06em;
+  border:1px solid var(--line); border-radius:5px; padding:3px 7px; color:var(--ink-3);
+  text-transform:uppercase; flex:none}
+
+.sec-list{display:flex; flex-direction:column; border:1px solid var(--line);
+  border-radius:var(--r-m); background:var(--surface); overflow:hidden}
+.sec-row{display:flex; align-items:center; gap:11px; padding:11px 14px; border:0;
+  border-top:1px solid var(--line); background:none; width:100%; text-align:left}
+.sec-row:first-child{border-top:0}
+.sec-row:active{background:var(--surface-2)}
+.sec-row .nm{flex:1; font-family:var(--f-display); font-weight:600; font-size:14px;
+  letter-spacing:.01em; min-width:0}
+.sec-row .ct{font-size:12px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+.dot{width:7px; height:7px; border-radius:99px; flex:none; background:var(--chip-line)}
+.dot.some{background:var(--miss)} .dot.done{background:var(--ok)}
+
+/* ---------- stage ---------- */
+.stage{padding-top:14px; display:flex; flex-direction:column; gap:14px}
+.stage-head{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+.pill{
+  font-family:var(--f-display); font-size:10.5px; font-weight:600; letter-spacing:.1em;
+  text-transform:uppercase; padding:4px 9px; border-radius:99px;
+  background:var(--surface-2); color:var(--ink-2); border:1px solid transparent;
+}
+.pill.round{background:var(--miss-bg); color:var(--miss); border-color:currentColor}
+.pill.rev{background:var(--navy); color:#fff}
+
+.card-title{
+  font-family:var(--f-display); font-weight:800; letter-spacing:-.015em; line-height:1.06;
+  font-size:clamp(27px,8.2vw,46px); margin:0; text-wrap:balance;
+}
+.said{font-family:var(--f-body); font-weight:400; font-size:14px; color:var(--ink-3);
+  font-style:italic; margin-top:5px}
+.badges{display:flex; gap:6px; margin-top:9px; flex-wrap:wrap}
+.badge{
+  display:inline-flex; align-items:center; gap:5px; border:1px solid var(--chip-line);
+  border-radius:99px; padding:3px 10px 3px 4px; font-size:12px; color:var(--ink-2);
+  background:var(--surface);
+}
+.badge i{width:19px; height:19px; border-radius:99px; background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-family:var(--f-display); font-weight:800;
+  font-size:11px; font-style:normal}
+
+.ask{display:flex; align-items:baseline; gap:9px; padding-top:2px}
+.ask .q{font-family:var(--f-display); font-weight:600; font-size:13px; color:var(--coral);
+  letter-spacing:.05em; text-transform:uppercase; flex:none}
+.ask .n{font-size:13px; color:var(--ink-2)}
+
+.chips{display:flex; flex-wrap:wrap; gap:7px}
+.chip{
+  border:1px solid var(--chip-line); background:var(--chip-bg); color:var(--ink-2);
+  border-radius:var(--r-s); padding:7px 11px; font-size:14.5px; line-height:1.25;
+  display:inline-flex; align-items:center; gap:7px; text-align:left;
+  transition:background .18s ease, color .18s ease, border-color .18s ease;
+}
+.chip .mask{font-family:var(--f-display); letter-spacing:.06em; color:var(--ink-3)}
+.chip.hit{background:var(--ok-bg); border-color:var(--ok); color:var(--ok); font-weight:600}
+.chip.shown{background:var(--miss-bg); border-color:var(--miss); color:var(--miss)}
+.chip .tick{width:14px; height:14px; flex:none; stroke:currentColor; fill:none; stroke-width:2.6;
+  stroke-linecap:round; stroke-linejoin:round}
+
+.heard{
+  border:1px dashed var(--chip-line); border-radius:var(--r-m); padding:10px 12px;
+  min-height:46px; background:var(--surface); font-size:14.5px; color:var(--ink-2);
+}
+.heard .eyebrow{margin-bottom:3px}
+.heard.live{border-style:solid; border-color:var(--coral)}
+.heard em{color:var(--ink-3); font-style:normal}
+
+.detail{border:1px solid var(--line); border-radius:var(--r-m); background:var(--surface); overflow:hidden}
+.detail div{padding:10px 13px; border-top:1px solid var(--line)}
+.detail div:first-child{border-top:0}
+.detail .eyebrow{color:var(--teal); margin-bottom:2px}
+.detail p{margin:0; font-size:14px; color:var(--ink-2)}
+
+.result{border-radius:var(--r-m); padding:13px 15px; border:1px solid}
+.result.pass{background:var(--ok-bg); border-color:var(--ok)}
+.result.fail{background:var(--miss-bg); border-color:var(--miss)}
+.result h3{margin:0; font-family:var(--f-display); font-size:17px; font-weight:800}
+.result.pass h3{color:var(--ok)} .result.fail h3{color:var(--miss)}
+.result p{margin:4px 0 0; font-size:14px; color:var(--ink-2)}
+
+/* ---------- control bar ---------- */
+.bar{
+  position:fixed; left:0; right:0; bottom:0; z-index:40; background:var(--surface);
+  border-top:1px solid var(--line); padding:9px 16px calc(9px + env(safe-area-inset-bottom,0px));
+}
+.bar-in{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:7px}
+.row-main{display:flex; align-items:center; gap:9px}
+.cbtn{
+  flex:1; border:1px solid var(--line); background:var(--surface); border-radius:var(--r-m);
+  height:50px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:1px; padding:0; min-width:0;
+}
+.cbtn:active{background:var(--surface-2)}
+.cbtn svg{width:20px; height:20px; stroke:var(--ink-2); fill:none; stroke-width:1.9;
+  stroke-linecap:round; stroke-linejoin:round}
+.cbtn small{font-size:10px; color:var(--ink-3); letter-spacing:.03em}
+.cbtn[disabled]{opacity:.38}
+.mic{
+  flex:0 0 84px; height:50px; border-radius:var(--r-m); border:1px solid var(--coral);
+  background:var(--coral); color:#fff; display:flex; align-items:center; justify-content:center; gap:7px;
+}
+.mic svg{stroke:#fff; width:21px; height:21px}
+.mic small{color:rgba(255,255,255,.9); font-size:10px}
+.mic.on{animation:pulse 1.5s ease-in-out infinite}
+.mic.off{background:var(--surface); border-color:var(--line)}
+.mic.off svg{stroke:var(--ink-2)} .mic.off small{color:var(--ink-3)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(224,84,58,.45)}50%{box-shadow:0 0 0 9px rgba(224,84,58,0)}}
+@media (prefers-reduced-motion:reduce){.mic.on{animation:none} *{transition:none !important}}
+.row-sub{display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.row-sub::-webkit-scrollbar{display:none}
+.sbtn{
+  border:1px solid var(--line); background:var(--surface); border-radius:99px; padding:6px 12px;
+  font-size:12.5px; color:var(--ink-2); white-space:nowrap; flex:none;
+}
+.sbtn:active{background:var(--surface-2)}
+.sbtn.hot{border-color:var(--coral); color:var(--coral)}
+
+/* ---------- panel ---------- */
+.scrim{position:fixed; inset:0; background:rgba(10,20,32,.45); z-index:50; opacity:0;
+  pointer-events:none; transition:opacity .2s ease}
+.scrim.open{opacity:1; pointer-events:auto}
+.panel{
+  position:fixed; z-index:51; inset:auto 0 0 0; max-height:86vh; overflow-y:auto;
+  background:var(--paper); border-top:1px solid var(--line);
+  border-radius:var(--r-l) var(--r-l) 0 0; transform:translateY(102%);
+  transition:transform .24s cubic-bezier(.32,.72,0,1); -webkit-overflow-scrolling:touch;
+}
+.panel.open{transform:translateY(0)}
+.panel-in{max-width:760px; margin:0 auto; padding:8px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.grab{width:36px; height:4px; border-radius:99px; background:var(--chip-line); margin:0 auto 12px}
+.panel h2{font-family:var(--f-display); font-weight:800; font-size:19px; margin:0 0 3px}
+.panel .sub{font-size:13px; color:var(--ink-3); margin:0 0 14px}
+.grp{margin-bottom:18px}
+.grp > .eyebrow{margin-bottom:7px; display:block}
+
+.opt-row{display:flex; align-items:center; gap:11px; padding:10px 0; border-top:1px solid var(--line)}
+.opt-row:first-of-type{border-top:0}
+.opt-row .lb{flex:1; min-width:0}
+.opt-row .lb b{display:block; font-size:14.5px; font-weight:600; font-family:var(--f-display)}
+.opt-row .lb span{display:block; font-size:12.5px; color:var(--ink-3); line-height:1.35}
+.seg{display:flex; border:1px solid var(--line); border-radius:var(--r-m); overflow:hidden; flex:none;
+  background:var(--surface)}
+.seg button{border:0; background:none; padding:7px 11px; font-size:13px; color:var(--ink-3);
+  border-left:1px solid var(--line); font-variant-numeric:tabular-nums}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--navy); color:#fff}
+input[type=range]{width:118px; accent-color:var(--coral); flex:none}
+
+.cmd-grid{display:grid; grid-template-columns:1fr; gap:0}
+.cmd{display:flex; gap:11px; padding:8px 0; border-top:1px solid var(--line); align-items:baseline}
+.cmd:first-child{border-top:0}
+.cmd code{font-family:var(--f-display); font-weight:600; font-size:13.5px; color:var(--coral);
+  flex:0 0 42%; letter-spacing:.01em}
+.cmd span{font-size:13px; color:var(--ink-2); flex:1}
+
+.miss-row{display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--line)}
+.miss-row:first-child{border-top:0}
+.miss-row .nm{flex:1; font-size:14px; font-family:var(--f-display); font-weight:600}
+.miss-row .sc{font-size:12.5px; color:var(--miss); font-variant-numeric:tabular-nums}
+
+.drop{
+  border:2px dashed var(--chip-line); border-radius:var(--r-m); padding:22px 16px; text-align:center;
+  background:var(--surface);
+}
+.drop.over{border-color:var(--coral); background:var(--miss-bg)}
+.drop b{display:block; font-family:var(--f-display); font-weight:600; font-size:15px}
+.drop span{display:block; font-size:12.5px; color:var(--ink-3); margin-top:3px}
+.note{font-size:12.5px; color:var(--ink-3); margin-top:9px; line-height:1.45}
+.warn{border-left:3px solid var(--miss); padding-left:11px; font-size:13px; color:var(--ink-2); margin-top:12px}
+textarea{width:100%; min-height:80px; border:1px solid var(--line); border-radius:var(--r-m);
+  padding:10px; font:inherit; font-size:14px; background:var(--surface); color:var(--ink); resize:vertical}
+.typed{display:flex; gap:7px; margin-top:2px}
+.typed input{flex:1; min-width:0; border:1px solid var(--line); border-radius:var(--r-m); padding:11px 12px;
+  font:inherit; font-size:15px; background:var(--surface); color:var(--ink)}
+.toast{
+  position:fixed; left:50%; bottom:calc(var(--bar-h) + 14px); transform:translateX(-50%);
+  background:var(--navy); color:#fff; padding:9px 15px; border-radius:99px; font-size:13.5px;
+  z-index:60; opacity:0; pointer-events:none; transition:opacity .2s ease; max-width:88vw; text-align:center;
+}
+.toast.show{opacity:1}
+</style>
+
+<header class="top">
+  <div class="wrap" style="padding-block:0">
+    <div class="top-row">
+      <div class="brandmark" aria-hidden="true">EK</div>
+      <div class="brand-txt">
+        <b id="deckName">Earls Full Menu — Food Knowledge</b>
+        <span id="deckSub">USA | Full Menu · Updated P4 2026</span>
+      </div>
+      <button class="icon-btn" id="btnHome" title="Home" aria-label="Home">
+        <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg>
+      </button>
+      <button class="icon-btn" id="btnMenu" title="Menu" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+    <div class="meter" id="meter" aria-hidden="true"><i class="m-ok" style="width:0"></i><i class="m-miss" style="width:0"></i></div>
+    <div class="meter-labels"><span id="mLeft">Not started</span><span id="mRight"></span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- HOME -->
+  <section class="home" id="home">
+    <div class="hero">
+      <span class="eyebrow">Voice drill · 62 cards · 13 sections</span>
+      <h1>Know every dish by heart.</h1>
+      <p>It reads you a dish, you say the ingredients out loud, and it marks what you got. Everything you miss comes back at the end until you clear it.</p>
+      <div class="stats" id="homeStats"></div>
+    </div>
+
+    <div id="frameNote"></div>
+
+    <div class="start-block">
+      <button class="btn primary" id="startFull">
+        <div class="lede"><b>Full run — all 62 cards</b><span>Every section in menu order, then a retry round on your misses</span></div>
+        <span class="kbd">Start</span>
+      </button>
+      <button class="btn" id="startMisses">
+        <div class="lede"><b id="missesLabel">Drill my misses</b><span id="missesSub">Nothing saved yet</span></div>
+        <span class="kbd">Go</span>
+      </button>
+      <button class="btn" id="startReverse">
+        <div class="lede"><b>Bonus round — name the dish</b><span>It reads the ingredients, you name the item</span></div>
+        <span class="kbd">Go</span>
+      </button>
+    </div>
+
+    <div class="grp">
+      <span class="eyebrow">Study one section</span>
+      <div class="sec-list" id="secList"></div>
+    </div>
+  </section>
+
+  <!-- STAGE -->
+  <section class="stage hidden" id="stage">
+    <div class="stage-head">
+      <span class="pill" id="pillSection">To Start</span>
+      <span class="pill num" id="pillPos">1 / 10</span>
+      <span class="pill round hidden" id="pillRound">Retry round 2</span>
+      <span class="pill rev hidden" id="pillRev">Name the dish</span>
+    </div>
+
+    <div>
+      <h2 class="card-title" id="cardTitle">—</h2>
+      <div class="said hidden" id="cardSay"></div>
+      <div class="badges" id="cardBadges"></div>
+    </div>
+
+    <div class="ask">
+      <span class="q" id="askLabel">Made with</span>
+      <span class="n num" id="askCount"></span>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <div class="heard" id="heard">
+      <span class="eyebrow">Heard</span>
+      <div id="heardTxt"><em>Tap the mic and start naming ingredients.</em></div>
+    </div>
+
+    <div class="typed hidden" id="typedWrap">
+      <input id="typedIn" placeholder="Type an ingredient, or a command" autocomplete="off" enterkeyhint="send">
+      <button class="sbtn" id="typedGo" style="padding:0 16px">Enter</button>
+    </div>
+
+    <div id="resultSlot"></div>
+    <div class="detail hidden" id="detail"></div>
+  </section>
+
+  <!-- SUMMARY -->
+  <section class="home hidden" id="summary">
+    <div class="hero">
+      <span class="eyebrow" id="sumEyebrow">Round complete</span>
+      <h1 id="sumTitle">Round complete</h1>
+      <p id="sumBody"></p>
+      <div class="stats" id="sumStats"></div>
+    </div>
+    <div class="start-block" id="sumActions"></div>
+    <div class="grp hidden" id="sumMissWrap">
+      <span class="eyebrow">Missed this round</span>
+      <div id="sumMisses"></div>
+    </div>
+  </section>
+</main>
+
+<!-- CONTROL BAR -->
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <div class="row-main">
+      <button class="cbtn" id="cBack"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><small>Back</small></button>
+      <button class="cbtn" id="cRepeat"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 8-8c3 0 5.4 1.6 6.8 4"/><path d="M20 4v4.5h-4.5"/><path d="M20 12a8 8 0 0 1-8 8c-3 0-5.4-1.6-6.8-4"/><path d="M4 20v-4.5h4.5"/></svg><small>Repeat</small></button>
+      <button class="mic" id="cMic"><svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg><small id="micLbl">Talk</small></button>
+      <button class="cbtn" id="cReveal"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg><small>Answer</small></button>
+      <button class="cbtn" id="cNext"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg><small>Next</small></button>
+    </div>
+    <div class="row-sub">
+      <button class="sbtn" id="sDone">Done answering</button>
+      <button class="sbtn" id="sHint">Hint</button>
+      <button class="sbtn" id="sSpell">Spell it</button>
+      <button class="sbtn" id="sCount">How many</button>
+      <button class="sbtn" id="sRight">Mark correct</button>
+      <button class="sbtn" id="sWrong">Mark missed</button>
+      <button class="sbtn" id="sTastes">Tastes like</button>
+      <button class="sbtn" id="sServed">Served with</button>
+      <button class="sbtn" id="sType">Type instead</button>
+      <button class="sbtn" id="sEnd">End round</button>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="panel-in"><div class="grab"></div><div id="panelBody"></div></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script id="deck-data" type="application/json">{"title":"Earls Full Menu — Food Knowledge","subtitle":"USA | Full Menu · Updated P4 2026","source":"USA - Service Full Menu Food Package.pdf","symbol_meaning":{"R":"May be raw or undercooked","V":"Vegetarian","G":"Gluten-aware"},"sections":[{"name":"HAPPY HOUR EXCLUSIVES","note":null,"page":6,"cards":[{"id":"c1","type":"ingredients","name":"NASHVILLE CRISPY CHICKEN + PICKLE SKEWERS","pronounced":null,"menu_label":"Happy Hour Exclusives","symbols":[],"answers":["Buttermilk Marinated Chicken Thigh","Fried Chicken Breading","Chipotle Cayenne Oil","Nashville Hot Spice","Bread & Butter Pickles","Honey Mustard (Mayo)"],"notes":[],"delivery_script":null,"tastes_like":"Perfectly spiced crispy fried chicken skewers with crunchy bread & butter pickles, and served with honey mustard mayonnaise.","ask_educate":"Happy Hour Exclusive item.","served_with":null,"share_the_story":null,"page":7},{"id":"c2","type":"ingredients","name":"PETITE STEAK FRITES","pronounced":null,"menu_label":"Happy Hour Exclusives","symbols":["R","G"],"answers":["Sirloin Steak","French Fries","Garlic Truffle Oil","Parmesan Cheese","Chives","Garlic Truffle Mayo"],"notes":[],"delivery_script":null,"tastes_like":"Juicy, caramelized sliced steak cooked to perfection, paired with crispy truffle fries and garlic truffle dip.","ask_educate":"Happy Hour Exclusive item.","served_with":null,"share_the_story":null,"page":9},{"id":"c3","type":"ingredients","name":"CHIPS & SALSA","pronounced":null,"menu_label":"Happy Hour Exclusives","symbols":["V"],"answers":["Seasoned Nacho Chips","Salsa Roja"],"notes":[],"delivery_script":null,"tastes_like":"Perfectly seasoned nacho chips paired with our delicious salsa roja for dipping!","ask_educate":"Happy Hour Exclusive item.","served_with":null,"share_the_story":null,"page":11}]},{"name":"SURPRISE & DELIGHT","note":null,"page":13,"cards":[{"id":"c60","type":"list","name":"Surprise & Delight","pronounced":null,"menu_label":"SURPRISE & DELIGHT","symbols":[],"answers":["½ Crispy Chili Tofu","½ Ahi Tuna Tataki","½ Yuzu Calamari","½ Szechuan Shrimp + Pork Dumplings","½ Spicy Cali Roll","½ Aburi Salmon Sushi Press","4 Piece Crispy Rice Sushi (Tuna, Salmon)","½ Charred Corn + Avocado Dip","Crispy Chicken + Pickle Skewers","Chips & Salsa","Sticky Toffee Chocolate Pudding","Crème Brûlée Cheesecake"],"notes":[],"delivery_script":null,"prompt":"Name all 12 Surprise & Delight offerings.","tastes_like":null,"ask_educate":null,"served_with":null,"share_the_story":null,"page":14}]},{"name":"TO START","note":null,"page":15,"cards":[{"id":"c4","type":"ingredients","name":"CHARRED CORN + AVOCADO DIP","pronounced":null,"menu_label":"To Start + Plant-Based","symbols":["G","V"],"answers":["Seasoned Tortilla Chips","Smashed Avocado","Charred Corn","Chipotle Mayo","Feta (remove for plant-based)","Pickled Red Onions","Watermelon Radish","Cilantro"],"notes":[],"delivery_script":null,"tastes_like":"Creamy avocado and charred corn dip topped with pickled red onions and feta, served with crispy tortilla chips.","ask_educate":"Vegan version available (remove feta)","served_with":null,"share_the_story":null,"page":16},{"id":"c5","type":"ingredients","name":"YUZU CALAMARI","pronounced":null,"menu_label":"To Start","symbols":["G"],"answers":["Crispy Marinated Squid","Cucumber","Jalapeños","Watermelon Radish","Lemon Wedge","Micro Cilantro","Yuzu Aioli"],"notes":[],"delivery_script":null,"tastes_like":"Light and crispy squid with a kick of spice and a tangy yuzu aioli for dipping.","ask_educate":null,"served_with":null,"share_the_story":null,"page":18},{"id":"c6","type":"ingredients","name":"CRISPY CHILI TOFU","pronounced":null,"menu_label":"To Start + Plant-Based","symbols":["V"],"answers":["Tofu","Sriracha Mayonnaise","Togarashi","Green Onion","Watermelon Radish","Sweet Chili Soy Sauce"],"notes":[],"delivery_script":null,"tastes_like":"Crispy tofu drizzled with sriracha mayo, and topped with fresh green onions and radishes. Served with a warm sweet chili soy sauce.","ask_educate":null,"served_with":"Chopsticks.","share_the_story":null,"page":20},{"id":"c7","type":"ingredients","name":"SZECHUAN SHRIMP + PORK DUMPLINGS","pronounced":null,"menu_label":"To Start","symbols":[],"answers":["Shrimp + Pork Dumplings","Szechuan Chili Sauce","Crushed Peanuts","Crispy Onions","Green Onions","Micro Cilantro"],"notes":[],"delivery_script":null,"tastes_like":"Dumplings filled with shrimp and pork, tossed in a flavorful chili sauce and garnished with peanuts, crispy onions, green onions, and cilantro.","ask_educate":null,"served_with":"Chopsticks.","share_the_story":null,"page":22},{"id":"c8","type":"ingredients","name":"STICKY KOREAN RIBS","pronounced":null,"menu_label":"To Start","symbols":[],"answers":["Korean BBQ Ribs","Chinese Five Spice","Korean BBQ Sauce","Crispy Onions","Chili Flakes","Toasted Sesame Seeds","Cilantro","Lime"],"notes":[],"delivery_script":null,"tastes_like":"Crispy BBQ ribs coated in a spicy, tangy Korean BBQ sauce.","ask_educate":null,"served_with":null,"share_the_story":null,"page":24},{"id":"c9","type":"ingredients","name":"CRISPY BIRRIA TACOS","pronounced":null,"menu_label":"To Start","symbols":[],"answers":["Corn Tortillas","Chipotle Cayenne Oil","Braised beef","Shredded Aged White Cheddar","Shallots","Cilantro","Birria Broth","Lime Wedge"],"notes":[],"delivery_script":null,"tastes_like":"Tender braised beef, crispy corn tortillas with aged white cheddar, and served with spiced beef broth for dipping.","ask_educate":null,"served_with":null,"share_the_story":null,"page":26},{"id":"c10","type":"ingredients","name":"EARLS CHICKEN TENDERS + FRIES","pronounced":null,"menu_label":"To Start","symbols":[],"answers":["Hand-breaded Panko Crusted Chicken Tenders","French Fries","Honey Mustard","Ketchup"],"notes":[],"delivery_script":null,"tastes_like":"Seven plump and juicy crispy chicken tenders, served with delicious honey mustard sauce.","ask_educate":null,"served_with":null,"share_the_story":null,"page":28},{"id":"c11","type":"ingredients","name":"TRUFFLE FRIES","pronounced":null,"menu_label":"To Start","symbols":["V","G"],"answers":["French Fries","Parmesan Cheese","Garlic Truffle Oil","Chives","Garlic Truffle Aioli Dip"],"notes":[],"delivery_script":null,"tastes_like":"Crispy shoestring-cut fries finished with a pepper medley and freshly grated parmesan, served with a garlic truffle aioli.","ask_educate":null,"served_with":null,"share_the_story":null,"page":30},{"id":"c12","type":"ingredients","name":"FRENCH FRIES","pronounced":null,"menu_label":"Config | Off Menu Honoring","symbols":["V","G"],"answers":["French Fries","Ketchup"],"notes":[],"delivery_script":null,"tastes_like":"Crispy shoestring-cut fries seasoned with salt, and ketchup for dipping.","ask_educate":null,"served_with":null,"share_the_story":null,"page":32},{"id":"c13","type":"ingredients","name":"EARLS WINGS","pronounced":null,"menu_label":"To Start","symbols":[],"answers":["Chicken Wings","Hot Sauce","Creamy Ranch Dip"],"notes":["Only Available At: Bellevue"],"delivery_script":null,"tastes_like":"Our famous hot wings, served with a rich and creamy ranch dip.","ask_educate":"Celery available upon request.","served_with":null,"share_the_story":null,"page":34}]},{"name":"SUSHI + RAW","note":null,"page":36,"cards":[{"id":"c14","type":"ingredients","name":"ABURI SALMON SUSHI PRESS","pronounced":null,"menu_label":"Sushi + Raw","symbols":["R"],"answers":["Sushi Rice","Salmon","Pickled Ginger","Arare Pearls","Jalapeño","Dashi Mayo","Micro Cilantro","Micro Greens"],"notes":[],"delivery_script":null,"tastes_like":"Sushi rice topped with torched salmon, crispy arare pearls and jalapeńo for a little kick.","ask_educate":null,"served_with":"Sushi setting.","share_the_story":null,"page":37},{"id":"c15","type":"ingredients","name":"CRISPY RICE SUSHI (SPICY SALMON, AHI TUNA)","pronounced":null,"menu_label":"Sushi + Raw","symbols":["R"],"answers":["Salmon Tartare or Tuna Tartare","Dashi Mayo","Jalapeño","Togarashi Spice","Sushi Rice","Poke Dressing","Chives","Micro Cilantro","Micro Greens","Unagi Sauce"],"notes":[],"delivery_script":null,"tastes_like":"Crispy fried sushi rice topped with freshly marinated salmon or tuna and finished with dashi mayo.","ask_educate":"Choose between Salmon or Tuna.","served_with":"Sushi setting.","share_the_story":null,"page":39},{"id":"c16","type":"ingredients","name":"SPICY CALIFORNIA ROLL","pronounced":null,"menu_label":"Sushi + Raw","symbols":[],"answers":["Sesame Seed Soy Wrapper","Sushi Rice","Shiso Leaves","Spicy Yuzu Mayo","Spicy Crab Mix","Cucumber","Pickled Ginger","Avocado","Arare Pearls","Togarashi Spice","Micro Cilantro"],"notes":[],"delivery_script":null,"tastes_like":"Tightly rolled sushi with fresh cucumber, creamy yuzu spicy crab, and avocado.","ask_educate":null,"served_with":"Sushi setting.","share_the_story":null,"page":41},{"id":"c17","type":"ingredients","name":"STEAK + SUSHI","pronounced":null,"menu_label":"Sushi + Raw","symbols":["R"],"answers":["Ponzu Sauce","Choice of Steak","Choice of Sushi"],"notes":[],"delivery_script":null,"tastes_like":"Your choice of sushi, paired with sliced steak cooked just how you like it!","ask_educate":"Upgrade from 4oz Prime Sirloin to 6oz or 8oz Filet, or 12oz Prime Ribeye. Cooked to the guests liking - rare, medium rare, medium, medium well, well. Steak Knowledge","served_with":"Sushi setting. Steak knife.","share_the_story":null,"page":43},{"id":"c18","type":"ingredients","name":"AHI TUNA TATAKI","pronounced":null,"menu_label":"Sushi + Raw","symbols":["R"],"answers":["Citrus Ahi Tuna","Pickled Ginger","Pickled Shimeji Mushrooms","Yuzu Broth","Crispy Onions","Avocado Puree","Fennel","Micro greens"],"notes":[],"delivery_script":null,"tastes_like":"Ahi tuna over pickled ginger shimeji mushrooms, yuzu broth, and avocado puree.","ask_educate":null,"served_with":"Chopsticks.","share_the_story":null,"page":45},{"id":"c19","type":"ingredients","name":"OYSTERS ON THE HALF SHELL","pronounced":null,"menu_label":"Sushi + Raw","symbols":["G","R"],"answers":["Fresh Shucked Oysters","Fresh Horseradish","Mignonette","Lemon Wedge"],"notes":[],"delivery_script":"Here are your fresh oysters with (pointing) lemon, horseradish and mignonette","tastes_like":"Fresh Oysters with beautiful crisp and clean brine flavour and a white cream colour from it’s icy waters.","ask_educate":"Half-Dozen Oysters and/or Single Oysters also available.","served_with":"1 demitasse spoon, 1 oyster fork per person.","share_the_story":null,"page":47},{"id":"c20","type":"ingredients","name":"SEAFOOD PLATTER","pronounced":null,"menu_label":"Sushi + Raw","symbols":[],"answers":["Shucked Oysters","Spicy California Roll","Poached Prawns","Ahi Tuna Tataki","Poached Lobster Tail","Mignonette","Lemon Vinaigrette","Horseradish","Cocktail Sauce","Lemon Wedges"],"notes":[],"delivery_script":"Let me take you on a tour of what we have! Poached lobster tail, fresh oysters, our ahi tuna tataki, spicy cali roll, and poached prawns tossed with a lemon vinaigrette. Moving onto the accoutrements, we have our mignonette, fresh horseradish, and spicy house made cocktail sauce. Enjoy!","tastes_like":"The perfect way to sample our seafood appetizers together! Fresh oysters, poached prawns, lobster, tuna tataki, and sushi.","ask_educate":"Serves 2-4","served_with":"Small fork, small spoon, sushi setting, chopsticks. First person: Bring sides: chopsticks + soy bottle *share plates should be preset with the table prior to delivery. Second person: Brings out platter and takes the table through the platter with the delivery description.","share_the_story":null,"page":49},{"id":"c21","type":"ingredients","name":"SEAFOOD TOWER","pronounced":null,"menu_label":"Sushi + Raw","symbols":[],"answers":["Shucked Oysters","Spicy California Roll","Poached prawns","Ahi Tuna Tataki","Poached Lobster Tail","Horseradish","Mignonette","Lemon Vinaigrette","Cocktail Sauce","Lemon Wedges"],"notes":[],"delivery_script":"Let me take you on a tour of what we have! At the top we have our poached lobster tail, poached prawns tossed with a lemon vinaigrette and fresh oysters. Moving to the bottom we have more delicious oysters, our delicate Ahi tuna tataki and lastly our spicy cali roll. Going onto the accoutrements, we have our mignonette, fresh horseradish, and spicy house-made cocktail sauce. Enjoy!","tastes_like":"The ultimate seafood sampler - oysters, prawns, lobster, tuna tataki, and sushi. Perfect for sharing!","ask_educate":"Serves 4-6.","served_with":"Small fork, small spoon, sushi setting, chopsticks. First person: Brings sides (chopsticks + soy bottle) *share plates should be preset with the table prior to delivery. Second person: Brings out bottom tier. Third person: Brings out top tier and takes the table through the platter with the delivery description.","share_the_story":null,"page":51}]},{"name":"BOWLS + SALADS","note":"All served with tongs when sharing","page":53,"cards":[{"id":"c22","type":"ingredients","name":"COBB SALAD","pronounced":null,"menu_label":"Bowls + Salads","symbols":[],"answers":["Romaine","Cobb Herbs","Ranch Dressing","Blue Cheese","Oven-dried Tomatoes","Avocado","Smoked Bacon","Soft-boiled egg","Fennel Fronds"],"notes":[],"delivery_script":null,"tastes_like":"Earls’ take on classic Cobb Salad, made with blue cheese and crispy bacon, tossed together with our ranch dressing.","ask_educate":"Upgrade with chicken, grilled garlic jumbo shrimp, or steak.","served_with":"Tongs when sharing.","share_the_story":null,"page":54},{"id":"c23","type":"ingredients","name":"SOUTHWEST CHICKEN AVOCADO SALAD","pronounced":null,"menu_label":"Bowls + Salads","symbols":["V"],"answers":["Grilled Cajun Chicken","Romaine","Field Greens","Black Beans","Corn","Dates","Avocado","Feta","Fried Tortilla Strips","Peanut Lime Vinaigrette","Cilantro"],"notes":[],"delivery_script":null,"tastes_like":"An Earls classic! A mix of fresh greens with all of the toppings - dates, feta, creamy avocado, feta cheese, all tossed together in our peanut lime dressing and topped with crispy tortilla strips.","ask_educate":"Upgrade with Steak, Salmon, Grilled Garlic Jumbo Shrimp, and/or Artisan bread.","served_with":"Tongs when sharing.","share_the_story":null,"page":56},{"id":"c24","type":"ingredients","name":"AHI TUNA POKE BOWL","pronounced":null,"menu_label":"Bowls + Salads","symbols":["R"],"answers":["Seasoned Sushi Rice","Ahi Tuna","Shredded Cabbage","Shiso Leaves","Green Onion","Dashi Mayo","Poke Dressing","Cucumbers","Mango","Watermelon Radish","Sesame Seaweed Salad","Avocado","Crushed Macadamia Nuts","Crispy Onions","Nori"],"notes":[],"delivery_script":null,"tastes_like":"A fresh and filling bowl of seasoned sushi rice, topped with marinated ahi tuna, fresh mango, veggies, and a savoury dressing.","ask_educate":"Enhance with extra tuna.","served_with":"Chopsticks. Tongs when sharing.","share_the_story":null,"page":58},{"id":"c25","type":"ingredients","name":"LITTLE GEM CAESAR SALAD","pronounced":null,"menu_label":"Bowls + Salads","symbols":[],"answers":["Gem Lettuce","Calabrian Chili Dressing","Lemon Juice","Toasted Garlic Crumbs","Parmesan Cheese","Parsley"],"notes":[],"delivery_script":null,"tastes_like":"Crisp gem lettuce leaves tossed in a tangy caesar dressing with a spicy kick, topped with golden-brown garlic crumbs, shaved parmesan cheese, and fresh parsley.","ask_educate":"Upgrade with Chicken, Grilled Jumbo Shrimp, or Salmon. Start size available (config only - off menu).","served_with":"Tongs when sharing.","share_the_story":null,"page":60},{"id":"c26","type":"ingredients","name":"GARDEN GREENS SALAD","pronounced":null,"menu_label":"Config | Off Menu Honoring","symbols":["V"],"answers":["Romaine","Earls’ Greens Mix","Lemon Vinaigrette","Toasted Garlic Crumbs","Parmesan Cheese","Watermelon Radish","Fennel Fronds"],"notes":[],"delivery_script":null,"tastes_like":"Refreshing salad with lemon vinaigrette, toasted garlic crumbs, parmesan cheese, watermelon radish, and fennel fronds.","ask_educate":"Add Grilled or Cajun Chicken, Steak, Salmon, Grilled Garlic Jumbo Shrimp, and/or Artisan bread","served_with":"Tongs when sharing.","share_the_story":null,"page":62}]},{"name":"HANDHELDS","note":null,"page":64,"cards":[{"id":"c27","type":"ingredients","name":"DELUXE BURGER","pronounced":null,"menu_label":"Handhelds","symbols":["R"],"answers":["Toasted Brioche Bun","Ground Chuck Beef Patty","Dry Cured Bacon","Lettuce","Tomato","Caramelized Onion Aioli","BBQ Sauce","Cheddar","Pickle","Crispy Onions","French Fries"],"notes":[],"delivery_script":null,"tastes_like":"A juicy burger cooked to perfection and served on a warm brioche bun with crisp vegetables, savory bacon, cheese, and crispy onions.","ask_educate":"Comes with fries, or can be upgraded to truffle fries, caesar salad, or garden greens ** Can NOT be made GA.","served_with":null,"share_the_story":null,"page":65},{"id":"c28","type":"ingredients","name":"NASHVILLE CRISPY CHICKEN SANDWICH","pronounced":null,"menu_label":"Handhelds","symbols":[],"answers":["Toasted Brioche Bun (or GA bun)","Hot Fried Chicken Thigh","Nashville Hot Spice","Honey Mustard Aioli","Bread & Butter Pickles","Lemon Slaw","French Fries"],"notes":[],"delivery_script":null,"tastes_like":"A twist on our classic burger! Hot chicken stacked with fresh veggies on a perfectly toasted brioche bun.","ask_educate":"Comes with Fries. Upgrade to truffle fries, caesar salad, or garden greens.","served_with":null,"share_the_story":null,"page":67},{"id":"c29","type":"ingredients","name":"GARDEN BURGER","pronounced":null,"menu_label":"Handhelds + Plant-Based","symbols":["V"],"answers":["Toasted Brioche Bun (or GA bun)","100% Plant-Based Patty","Lettuce","Tomato","Red Onion","Pickle","Mayo","Mustard","French Fries"],"notes":[],"delivery_script":null,"tastes_like":"So delicious, you wouldn't know the difference! A juicy plant-based patty, topped with fresh veggies and served on a toasted brioche bun.","ask_educate":"Comes with Fries. Upgrade to truffle fries, caesar salad, or garden greens.","served_with":null,"share_the_story":null,"page":69},{"id":"c30","type":"ingredients","name":"EARLS CLASSIC BURGER","pronounced":null,"menu_label":"Handhelds","symbols":["R"],"answers":["Toasted Brioche Bun (or GA Bun)","Ground Chuck Patty","Lettuce","Tomato","Onion","Pickle","Mayo","Mustard","French Fries"],"notes":[],"delivery_script":null,"tastes_like":"A juicy beef patty, topped with fresh veggies, and a warm brioche bun.","ask_educate":"Comes with fries. Upgrade to truffle fries, caesar salad, or garden greens. Add Cheddar, Bacon, Avocado, Fried Egg, and/or an extra patty.","served_with":null,"share_the_story":null,"page":71}]},{"name":"MAINS","note":null,"page":73,"cards":[{"id":"c31","type":"ingredients","name":"TUSCAN SEARED SALMON","pronounced":null,"menu_label":"Mains","symbols":["R"],"answers":["Salmon","Gnocchetti","Corn, Fennel, Spinach","White Wine Corn Sauce","Confit Garlic Butter","Basil","Oven-Dried Tomatoes","Chives","Arugula","Radicchio","Lemon Vinaigrette","Watermelon Radish"],"notes":[],"delivery_script":null,"tastes_like":"This Italian-inspired dish features perfectly roasted Atlantic salmon over tender, lightly caramelized gnocchetti, finished with a sweet white wine corn sauce and fennel. Topped with a lemon vinaigrette and oven-dried tomatoes with fresh arugula.","ask_educate":"What’s gnocchetti? Gnocchetti is a smaller version of gnocchi, with a light pillowy texture!","served_with":"Tongs when sharing.","share_the_story":null,"page":74},{"id":"c32","type":"ingredients","name":"TRUFFLE TORTELLINI","pronounced":null,"menu_label":"Mains","symbols":["V"],"answers":["Lemon Ricotta Tortellini","Spinach","Mushrooms","Broccolini or Asparagus","Truffle Cream Sauce","Parmesan","Basil Leaves","Lemon Juice","Chives"],"notes":[],"delivery_script":null,"tastes_like":"A delicate lemon and ricotta tortellini, made with spinach and asparagus, all tossed in our truffle cream sauce.","ask_educate":"Upgrade by adding your choice of steak, grilled or cajun chicken, or grilled garlic jumbo shrimp.","served_with":"Tongs when sharing.","share_the_story":null,"page":76},{"id":"c33","type":"ingredients","name":"SPICY CALABRIAN PASTA","pronounced":"ka·lah·bree·in","menu_label":"Mains","symbols":[],"answers":["Rigatoni Noodles","Chorizo","Spicy Tomato Sauce","Toasted Garlic Crumbs","Burrata Cheese","Parmesan Cheese","Basil Leaves"],"notes":[],"delivery_script":null,"tastes_like":"El dente Rigatoni noodles, coated in a smooth spicy tomato sauce with lightly caramelized chorizo, toasted garlic crumb, parmesan cheese, fresh basil, and a ball of Burrata Cheese.","ask_educate":"Vegetarian option available with no chorizo. Option to add chicken, salmon, sautéed prawns, steak, and/or artisan bread.","served_with":"Tongs when sharing.","share_the_story":null,"page":78},{"id":"c34","type":"ingredients","name":"SHRIMP + SCALLOP SPAGHETTINI","pronounced":null,"menu_label":"Mains","symbols":[],"answers":["Scallops","Shrimp","Spaghettini Noodles","Clam Pasta Broth","Basil Almond Pesto","Oven Dried Tomatoes","Parmesan Cheese","Basil Leaves","Micro Cilantro"],"notes":[],"delivery_script":null,"tastes_like":"Perfectly seared scallops and prawns on a bed spaghettini, coated in a vibrant green sauce. Garnished with fresh basil leaves, cilantro, parmesan cheese, and oven-dried tomatoes.","ask_educate":null,"served_with":"Tongs when sharing.","share_the_story":null,"page":80},{"id":"c35","type":"ingredients","name":"KOREAN BEEF BIBIMBAP","pronounced":null,"menu_label":"Mains","symbols":["R"],"answers":["Beef, Chicken, or Prawns","Sesame Oil","Jasmine Rice","Soy Sauce","Garlic","Sriracha Mayonnaise","Soy Ginger Mushroom Mix","Steamed Carrots","Broccolini","Kimchi","Poached Egg","Bibimbap Sauce","Sesame Seeds","Micro Cilantro"],"notes":[],"delivery_script":null,"tastes_like":"A bowl of piping hot crispy rice topped with beef, fresh vegetables, a poached egg, and cilantro. Finished with a spicy gochujang sauce.","ask_educate":"Choose between beef, chicken, prawns, or our vegan tofu option.","served_with":"Two soup spoons (for stirring). When delivering, say: Make sure to use your two spoons to give the bowl a good mix! Breaking the egg and stirring everything from the bottom up.","share_the_story":null,"page":82},{"id":"c36","type":"ingredients","name":"VEGAN KOREAN TOFU BIBIMBAP","pronounced":null,"menu_label":"Mains + Plant-Based","symbols":["V"],"answers":["Crispy Tofu","Sesame Oil","Jasmine Rice","Citrus Soy Sauce","Sriracha Mayonnaise","Soy Ginger Mushroom Mix","Steamed Carrots","Broccolini","Bibimbap Sauce","Sesame Seeds","Micro Cilantro"],"notes":[],"delivery_script":null,"tastes_like":"A bowl of piping hot crispy rice topped with tofu, fresh vegetables, and cilantro. Finished with a spicy gochujang sauce.","ask_educate":null,"served_with":"Two soup spoons (for stirring). When delivering, say: Make sure to use your two spoons to give the bowl a good mix - stirring everything from the bottom up.","share_the_story":null,"page":84},{"id":"c37","type":"ingredients","name":"MISO-GLAZED CHILEAN SEA BASS","pronounced":null,"menu_label":"Mains","symbols":["R"],"answers":["Miso Marinated Sea Bass","Quinoa","Bok Choy","Edamame","Shiitake Mushrooms","Carrot Coins","Mushroom Dashi Broth","Shiro Miso Marinade","Micro Greens","Micro Cilantro"],"notes":[],"delivery_script":null,"tastes_like":"Crispy roasted sea bass served with piping hot dashi broth, vegetables and hot quinoa, and fresh crisp greens.","ask_educate":null,"served_with":"Soup spoon.","share_the_story":null,"page":86},{"id":"c38","type":"ingredients","name":"CAJUN BLACKENED CHICKEN","pronounced":null,"menu_label":"Mains","symbols":["G"],"answers":["Cajun Chicken","Garlic Butter","Warm Potato Salad (bacon, corn, chives)","Kale oil","Coleslaw"],"notes":[],"delivery_script":null,"tastes_like":"A juicy, cajun blackened chicken breast served over a creamy warm potato salad loaded with corn and bacon, and perfectly complimented with our zesty coleslaw.","ask_educate":null,"served_with":null,"share_the_story":null,"page":88},{"id":"c39","type":"ingredients","name":"HONEY GLAZED TOMAHAWK PORKCHOP","pronounced":null,"menu_label":"Mains","symbols":["R"],"answers":["14oz Brined Kurobuta Bone-In Pork Chop","Harissa spice","Honey","Chives","Green Chermoula (lemon juice, parsley, cilantro, jalapeño, garlic)","Tamarind Date Chutney (tamarind puree, dates, sugar, ginger)","Seasonal Vegetables","Garlic Mashed Potatoes","Crispy Potato Garnish"],"notes":[],"delivery_script":null,"tastes_like":"Caramelized brined 14oz Kurobuta pork chop, glazed with honey and served with creamy mashed potatoes and seasonal vegetables. Finished with bright green chermoula, sweet tamarind date chutney, and a crisp potato garnish.","ask_educate":null,"served_with":"Steak knife.","share_the_story":null,"page":90}]},{"name":"TACOS","note":"All served with tortilla chips + salsa roja","page":92,"cards":[{"id":"c40","type":"ingredients","name":"BAJA","pronounced":null,"menu_label":"Tacos","symbols":[],"answers":["Flour Tortillas (or GA corn tortilla)","Crispy Battered Pacific Cod","Pineapple Jalapeño Salsa","Smashed Avocado","Green Cabbage","Chipotle Crema","Salsa Roja","Spiced Tortilla Chips","Lime Wedge"],"notes":[],"delivery_script":null,"tastes_like":"Enjoy our crispy battered pacific cod in a warm flour tortilla, topped with smashed avocado and pineapple jalapeño salsa. All served with spiced tortilla chips and salsa roja.","ask_educate":"Upgrade from tortilla chips & salsa roja to french or truffle fries, caesar salad, or garden greens. GA Corn tortilla available. Add single Baja taco (config only - off menu).","served_with":null,"share_the_story":null,"page":93},{"id":"c41","type":"ingredients","name":"POLLO","pronounced":null,"menu_label":"Tacos","symbols":[],"answers":["Flour Tortillas (or GA corn tortilla)","Grilled Chicken","Smashed Avocado","Charred Corn","Green Cabbage","Chipotle Crema","Pickled Red Onions","Feta","Cilantro","Salsa Roja","Spiced Tortilla Chips","Lime Wedge"],"notes":[],"delivery_script":null,"tastes_like":"Juicy grilled chicken, smashed avocado, feta, and chipotle crema wrapped in a warm tortilla. All served with spiced tortilla chips and salsa roja.","ask_educate":"GA Corn tortilla available. Upgrade from tortilla chips & salsa roja to french or truffle fries, caesar salad, or garden greens.","served_with":null,"share_the_story":null,"page":95},{"id":"c42","type":"ingredients","name":"CARNE","pronounced":null,"menu_label":"Tacos","symbols":["R"],"answers":["Flour Tortillas (or GA Corn Tortilla)","Chargrilled Sirloin Steak","Smashed Avocado","Charred Corn","Chipotle Crema","Green Cabbage","Pickled Red Onions","Feta","Cilantro","Salsa Roja","Spiced Tortilla Chips","Lime Wedge"],"notes":[],"delivery_script":null,"tastes_like":"Grilled tortillas loaded with juicy chargrilled sirloin steak, smashed avocado, feta, and chipotle crema. All served with spiced tortilla chips and salsa roja.","ask_educate":"GA Corn tortilla available. Upgrade from tortilla chips to french or truffle fries, salad, or soup.","served_with":null,"share_the_story":null,"page":97}]},{"name":"STEAKS","note":"Aged for a minimum of 45 days","page":99,"cards":[{"id":"c43","type":"ingredients","name":"CLASSIC STEAKS","pronounced":null,"menu_label":"Steaks","symbols":["G","R"],"answers":["6oz or 8oz Filet Tenderloin, or 12oz USDA Prime Ribeye","Seasonal Vegetables","Garlic Mashed Potatoes","Crispy Potato Garnish"],"notes":[],"delivery_script":null,"tastes_like":"Your choice of premium steak cooked just how you like it, creamy mashed potatoes, and seasonal veggies.","ask_educate":"Choose from a 6oz or 8oz filet tenderloin or 12oz USDA prime ribeye. Enhance with Black Truffle Butter, Blackening Spice, Peppercorn Sauce, Grilled Garlic Jumbo Shrimp, Sauteed Mushrooms, or Lobster Tail. Cooked to the guests liking - rare, medium rare, medium, medium well, well. Steak Knowledge","served_with":"Steak knife.","share_the_story":null,"page":100},{"id":"c44","type":"ingredients","name":"STEAK FRITES","pronounced":null,"menu_label":"Steaks","symbols":["R"],"answers":["4oz Chargrilled USDA Prime Sirloin","Artisan Bread","French Fries","Garden Greens","Horseradish Cream","Ketchup"],"notes":[],"delivery_script":null,"tastes_like":"Your choice of steak, paired with the most perfect french fries, garlic bread, and a fresh salad.","ask_educate":"Upgrade from 4oz USDA Prime Sirloin to 6oz or 8oz Filet, or 12oz USDA Prime Ribeye. Enhance with Black Truffle Butter, Blackening Spice, Peppercorn Sauce, Grilled Garlic Jumbo Shrimp, Sauteed Mushrooms, or Lobster Tail. Cooked to the guests liking - rare, medium rare, medium, medium well, well. Steak Knowledge","served_with":"Steak knife.","share_the_story":null,"page":102},{"id":"c45","type":"ingredients","name":"STEAK + SUSHI","pronounced":null,"menu_label":"Steaks","symbols":["R"],"answers":["Ponzu Sauce","Choice of Steak","Choice of Sushi"],"notes":[],"delivery_script":null,"tastes_like":"Your choice of sushi, paired with sliced steak cooked just how you like it!","ask_educate":"Upgrade from 4oz USDA Prime Sirloin to 6oz or 8oz Filet, or 12oz USDA Prime Ribeye. Cooked to the guests liking - rare, medium rare, medium, medium well, well. Steak Knowledge","served_with":"Sushi setting. Steak knife.","share_the_story":null,"page":104},{"id":"c46","type":"ingredients","name":"STEAK + TRUFFLE TORTELLINI","pronounced":null,"menu_label":"Steaks","symbols":["R"],"answers":["4oz USDA Prime Sirloin","Lemon Ricotta Tortellini","Mushrooms","Asparagus","Spinach","Truffle Cream","Parmesan","Ricotta"],"notes":[],"delivery_script":null,"tastes_like":"A delicate lemon and ricotta tortellini, made with spinach and asparagus, all tossed in our truffle cream sauce and paired with sliced steak cooked just to your liking.","ask_educate":"Upgrade from 4oz USDA Prime Sirloin to 6oz or 8oz Filet, or 12oz USDA Prime Ribeye. Cooked to the guests liking - rare, medium rare, medium, medium well, well. Steak Knowledge","served_with":"Tongs when sharing.","share_the_story":null,"page":106}]},{"name":"DESSERTS","note":null,"page":108,"cards":[{"id":"c47","type":"ingredients","name":"CRÈME BRÛLÉE CHEESECAKE","pronounced":null,"menu_label":"Desserts","symbols":[],"answers":["New York-Style Cheesecake with torched sugar","Vanilla Crème Angalise","Chantilly Cream","Fresh Strawberries"],"notes":[],"delivery_script":null,"tastes_like":"New York-style cheesecake with a torched sugar top, served with vanilla crème angalise, chantilly cream, and fresh strawberries.","ask_educate":null,"served_with":"Dessert spoon.","share_the_story":null,"page":109},{"id":"c48","type":"ingredients","name":"STICKY TOFFEE CHOCOLATE PUDDING","pronounced":null,"menu_label":"Desserts","symbols":[],"answers":["Chocolate Toffee Cake","Chocolate Sauce","Toffee Sauce","Vanilla Ice Cream","Almond Florentine","Fresh Strawberries"],"notes":[],"delivery_script":null,"tastes_like":"Warm chocolate cake with drizzled chocolate and toffee sauce, paired with vanilla ice cream, almond florentine, and fresh strawberries.","ask_educate":null,"served_with":"Dessert spoon.","share_the_story":null,"page":111},{"id":"c49","type":"ingredients","name":"KEY LIME PIE","pronounced":null,"menu_label":"Desserts","symbols":[],"answers":["Graham Cracker Crust","Fresh Squeezed Lime Juice","Chantilly Cream","Almond Florentine Cookie Crumble","Toasted Coconut Ribbons","Lime Zest"],"notes":[],"delivery_script":null,"tastes_like":"Tangy key lime filling with fresh-squeezed lime juice, set on a graham cracker crust, topped with chantilly cream, toasted coconut ribbons, and finished with lime zest.","ask_educate":null,"served_with":"Dessert spoon.","share_the_story":null,"page":113},{"id":"c50","type":"ingredients","name":"CHOCOLATE BANANA CREAM PIE","pronounced":null,"menu_label":"Desserts","symbols":[],"answers":["Graham Cracker Crust","Whipped Chocolate Ganache","Bananas","Chantilly Cream","Mint Sprig"],"notes":["Seasonal - Coming P13W2"],"delivery_script":null,"tastes_like":"Fresh bananas and whipped chocolate ganache in a graham cracker crust, topped with chantilly cream and a mint sprig.","ask_educate":null,"served_with":"Dessert spoon.","share_the_story":null,"page":115}]},{"name":"BRUNCH","note":null,"page":117,"cards":[{"id":"c51","type":"ingredients","name":"CHILAQUILES BRUNCH BOWL","pronounced":"chee·lah·kee·lays","menu_label":"Brunch","symbols":["R","G"],"answers":["Poached Eggs","Spicy Chorizo","Crispy Seasoned Tortilla Chips","Potato Pavé","Salsa Roja","Spicy Tomato Sauce","Black Beans","Charred Corn","Oven-Dried Tomatoes","Avocado","Feta","Pickled Red Onions","Chipotle Mayo","Jalapeño","Micro Cilantro"],"notes":[],"delivery_script":null,"tastes_like":"Crispy potato pavé, tortilla chips, spicy chorizo, and poached eggs layered under charred corn, pickled onions, chipotle mayo, and feta.","ask_educate":null,"served_with":null,"share_the_story":null,"page":118},{"id":"c52","type":"ingredients","name":"TOMATO + FETA SHAKSHUKA","pronounced":null,"menu_label":"Brunch","symbols":["R","V"],"answers":["Moroccan Shakshuka Sauce","Oven-Baked Eggs","Chipotle Cayenne Oil","Kalamata Olives","Feta Cheese","Jalapeño","Cilantro","Artisan Bread"],"notes":[],"delivery_script":null,"tastes_like":"Oven-baked eggs in a rich tomato sauce with feta, olives, cilantro, and crispy artisan bread.","ask_educate":null,"served_with":"Soup spoon.","share_the_story":null,"page":120},{"id":"c53","type":"ingredients","name":"NASHVILLE CRISPY CHICKEN + WAFFLES","pronounced":null,"menu_label":"Brunch","symbols":[],"answers":["Waffles","Buttermilk-Marinated Chicken thighs","Nashville Hot Spice","Maple Syrup"],"notes":[],"delivery_script":null,"tastes_like":"Sweet waffles, hot chicken, and maple syrup. The perfect combo to start the day.","ask_educate":null,"served_with":null,"share_the_story":null,"page":122},{"id":"c54","type":"ingredients","name":"STEAK + EGGS","pronounced":null,"menu_label":"Brunch","symbols":["R"],"answers":["4oz Chargrilled Sirloin Steak","Sunny Side Up Eggs","Potato Pavé","Artisan bread","Chives","Garden Greens","Lemon Vinaigrette","Ketchup"],"notes":[],"delivery_script":null,"tastes_like":"Sliced steak cooked to your liking, with two sunny side up eggs, artisan bread, and served with a side of our garden greens salad and crispy potato pavé.","ask_educate":"Upgrade from 4oz to 6oz or 8oz filet, or 12oz Ribeye. Cooked to the guests liking - rare, medium rare, medium, medium well, well. Steak Knowledge","served_with":"Steak knife.","share_the_story":null,"page":124},{"id":"c55","type":"ingredients","name":"BREAKFAST BURGER","pronounced":null,"menu_label":"Brunch","symbols":["R"],"answers":["Brioche Bun","Sunny Side Up Egg","Burger Patty","Bacon","Lettuce","Tomato","Onion","Pickle","Cheddar","Mayonnaise","Mustard","Potato Pavé","Garden Greens","Lemon Vinaigrette"],"notes":[],"delivery_script":null,"tastes_like":"The breakfast burger is the ultimate breakfast choice - loaded with a juicy beef patty, crispy bacon, cheddar cheese, and a sunny side up egg!","ask_educate":null,"served_with":null,"share_the_story":null,"page":126},{"id":"c56","type":"ingredients","name":"AMERICAN BREAKFAST","pronounced":null,"menu_label":"Brunch","symbols":["R"],"answers":["Sunny Side Up Eggs","Bacon","Potato Pavé","Garden Greens","Lemon Vinaigrette","Artisan Bread"],"notes":[],"delivery_script":null,"tastes_like":"A classic breakfast prepared with two sunny side up eggs, crispy bacon, crispy potato pave bites, salad, and toast.","ask_educate":"Confirm how the guest would like their eggs cooked.","served_with":null,"share_the_story":null,"page":128},{"id":"c57","type":"ingredients","name":"ALMOND BERRY PANCAKE","pronounced":null,"menu_label":"Brunch","symbols":["V"],"answers":["Pancake","Orange Zest","Vanilla Crème Anglaise","Raspberry Coulis","Almond Crumble","Chantilly Cream","Strawberries","Icing Sugar","Mint Sprig","Maple Syrup"],"notes":[],"delivery_script":null,"tastes_like":"A crispy on the outside, fluffy on the inside jumbo pancake topped with raspberry coulis, fresh fruit, candied almond crumble, and chantilly cream.","ask_educate":null,"served_with":null,"share_the_story":null,"page":130},{"id":"c58","type":"ingredients","name":"CLASSIC BENEDICT","pronounced":null,"menu_label":"Brunch","symbols":["R"],"answers":["Artisan Bread","Poached Eggs","Ham","Hollandaise","Chives","Potato Pavé","Garden Greens","Lemon Vinaigrette"],"notes":[],"delivery_script":null,"tastes_like":"Poached eggs and ham on toast, topped with rich hollandaise and fresh chives, served with potato pavé and garden greens in a lemon vinaigrette.","ask_educate":"Confirm how the guest would like their eggs cooked.","served_with":null,"share_the_story":null,"page":132},{"id":"c59","type":"ingredients","name":"AVOCADO BENEDICT","pronounced":null,"menu_label":"Brunch","symbols":["R","V"],"answers":["Artisan Bread","Poached Eggs","Avocado","Hollandaise","Chives","Potato Pavé","Garden Greens","Lemon Vinaigrette"],"notes":[],"delivery_script":null,"tastes_like":"Poached eggs and smashed avocado on toast, topped with hollandaise and chives, served with potato pavé and garden greens in a lemon vinaigrette.","ask_educate":"Enhance by adding bacon!","served_with":null,"share_the_story":null,"page":134}]},{"name":"SIDES","note":null,"page":136,"cards":[{"id":"c61","type":"list","name":"Sides","pronounced":null,"menu_label":"SIDES","symbols":[],"answers":["Potato Pavé","Coleslaw","Lobster Tail","Sauteed Mushrooms","Sauteed Prawns","Spring or Jasmine Rice","Truffle Mashed Potato","Warm Potato Salad"],"notes":[],"delivery_script":null,"prompt":"Name all 8 Sides.","tastes_like":null,"ask_educate":null,"served_with":null,"share_the_story":null,"page":137}]},{"name":"KIDS (12 & UNDER)","note":null,"page":138,"cards":[{"id":"c62","type":"list","name":"Kids (12 & Under)","pronounced":null,"menu_label":"KIDS (12 & UNDER)","symbols":[],"answers":["Burger & Fries","Tenders & Fries","Fish & Chips","Butter Noodles","Chicken + Cheese Quesadilla","Waffles","Ice Cream Bowl"],"notes":[],"delivery_script":null,"prompt":"Name all 7 Kids menu items.","tastes_like":null,"ask_educate":null,"served_with":null,"share_the_story":null,"page":139}]}]}</script>
+<script>
+"use strict";
+/* ============================================================
+   Earls Menu Drill — voice flashcards
+   ============================================================ */
+
+const BUILTIN = JSON.parse(document.getElementById('deck-data').textContent);
+const $ = id => document.getElementById(id);
+const PDFJS_VER = '3.11.174';
+
+/* ---------- deck model ---------- */
+function prepDeck(raw, id){
+  const d = {
+    id: id || 'builtin',
+    title: raw.title, subtitle: raw.subtitle || '',
+    symbol_meaning: raw.symbol_meaning || {R:'May be raw or undercooked',V:'Vegetarian',G:'Gluten-aware'},
+    sections: raw.sections.map(s => ({...s, cards: s.cards.map(c => ({...c}))}))
+  };
+  d.cards = [];
+  d.sections.forEach((s, si) => s.cards.forEach(c => {
+    c.sectionName = s.name; c.sectionIndex = si; c.sectionNote = s.note || null;
+    d.cards.push(c);
+  }));
+  buildIndex(d);
+  return d;
+}
+
+/* ---------- text + matching ---------- */
+const STOP = new Set(['and','or','the','a','an','of','with','in','on','for','to','plus','de','la','our','your','it','is','are','then','also','um','uh','like','okay','ok','so','next','one','has','have','there','that','this','some','its']);
+const deaccent = s => { try{ return s.normalize('NFD').replace(/[̀-ͯ]/g,''); }catch(e){ return s; } };
+const norm = s => deaccent(String(s||'')).toLowerCase().replace(/[’']/g,'').replace(/&/g,' and ')
+  .replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+const sing = t => (t.length>3 && t.endsWith('s') && !t.endsWith('ss') && !t.endsWith('us')) ? t.slice(0,-1) : t;
+function toks(s){ return norm(s).split(' ').filter(t => t && t.length>1 && !STOP.has(t)).map(sing); }
+
+function lev(a,b){
+  if(a===b) return 0;
+  if(Math.abs(a.length-b.length)>2) return 9;
+  const m=a.length,n=b.length; let prev=Array.from({length:n+1},(_,j)=>j), cur=new Array(n+1);
+  for(let i=1;i<=m;i++){ cur[0]=i;
+    for(let j=1;j<=n;j++) cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    [prev,cur]=[cur,prev];
+  }
+  return prev[n];
+}
+function fuzzyHas(tok, set, arr){
+  if(set.has(tok)) return true;
+  const tol = tok.length>=8 ? 2 : tok.length>=5 ? 1 : 0;
+  if(!tol) return false;
+  for(const c of arr){ if(Math.abs(c.length-tok.length)<=tol && lev(tok,c)<=tol) return true; }
+  return false;
+}
+
+function buildIndex(deck){
+  const df = new Map();
+  deck.cards.forEach(c => {
+    const seen = new Set();
+    c.answers.forEach(a => toks(a).forEach(t => seen.add(t)));
+    seen.forEach(t => df.set(t, (df.get(t)||0)+1));
+  });
+  deck.generic = new Set([...df.entries()].filter(([,n]) => n >= 6).map(([t]) => t));
+  deck.cards.forEach(c => { c._tok = c.answers.map(a => toks(a)); });
+}
+
+/* Which answers does this utterance cover? Returns a Set of indexes. */
+function matchAnswers(card, text, deck){
+  const tArr = toks(text); const tSet = new Set(tArr);
+  const hits = new Set();
+  card._tok.forEach((at, i) => {
+    if(!at.length) return;
+    let matched = 0, distinct = 0;
+    at.forEach(t => {
+      if(fuzzyHas(t, tSet, tArr)){ matched++; if(!deck.generic.has(t)) distinct++; }
+    });
+    const cov = matched / at.length;
+    if(cov === 1 || distinct >= 2 || (distinct >= 1 && cov >= 0.5)) hits.add(i);
+  });
+  return hits;
+}
+
+/* ---------- app state ---------- */
+const S = {
+  deck: null, decks: {}, view: 'home',
+  run: null,              // {queue, i, round, results:Map, mode, label}
+  card: null, hit: new Set(), revealed: new Set(), transcript: '',
+  listening: false, wantListen: false, speaking: false, autoAdvanceT: null, silenceT: null,
+  settings: {rate:1.0, pass:100, autoAdvance:true, silence:3500, sayCount:true, handsFree:true, sayTastes:false},
+  stats: {},              // cardId -> {seen, wrong, lastPct, lastAt}
+  db: null, uid: null, dbReady: false
+};
+
+/* ---------- storage: localStorage always, db when available ---------- */
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem('emd.'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('emd.'+k, JSON.stringify(v)); }catch(e){} }
+};
+function loadLocal(){
+  S.settings = Object.assign(S.settings, LS.get('settings', {}));
+  S.stats = LS.get('stats', {});
+  const custom = LS.get('decks', {});
+  Object.keys(custom).forEach(id => { try{ S.decks[id] = prepDeck(custom[id], id); }catch(e){} });
+}
+function saveSettings(){ LS.set('settings', S.settings); pushDb('settings', S.settings); }
+function saveStats(){ LS.set('stats', S.stats); pushDb('stats', {map:S.stats}); }
+function saveDecks(){
+  const out = {};
+  Object.keys(S.decks).forEach(id => { if(id!=='builtin') out[id] = rawOf(S.decks[id]); });
+  LS.set('decks', out);
+}
+function rawOf(d){ return {title:d.title, subtitle:d.subtitle, symbol_meaning:d.symbol_meaning,
+  sections:d.sections.map(s=>({name:s.name, note:s.note, page:s.page, cards:s.cards.map(c=>{
+    const o={...c}; delete o._tok; delete o.sectionName; delete o.sectionIndex; delete o.sectionNote; return o;
+  })}))}; }
+
+async function pushDb(kind, body){
+  if(!S.db) return;
+  try{ await S.db.doc('state/'+kind).set(Object.assign({updated:Date.now()}, body)); }catch(e){}
+}
+async function initDb(){
+  let db = null;
+  try{ db = await window.claude?.use?.('db'); }catch(e){ db = null; }
+  if(!db) return;
+  S.db = db;
+  try{
+    const st = await db.doc('state/stats').get();
+    if(st.exists && st.data().map){
+      const remote = st.data().map;
+      Object.keys(remote).forEach(id => {
+        const a = S.stats[id], b = remote[id];
+        if(!a || (b.lastAt||0) > (a.lastAt||0)) S.stats[id] = b;
+      });
+      LS.set('stats', S.stats);
+    }
+    const se = await db.doc('state/settings').get();
+    if(se.exists){ const r = se.data(); delete r.updated; S.settings = Object.assign(S.settings, r); LS.set('settings', S.settings); }
+    const snap = await db.collection('decks').get();
+    for(const doc of snap.docs){
+      const meta = doc.data();
+      if(S.decks[doc.id]) continue;
+      const chunks = await db.collection('decks/'+doc.id+'/chunks').get();
+      if(!chunks.size) continue;
+      const bySec = {};
+      chunks.docs.forEach(ch => (ch.data().cards||[]).forEach(c => { (bySec[c.__s] ||= []).push(c); }));
+      const sections = (meta.sections||[]).map((s,i)=>({name:s.name, note:s.note, page:s.page,
+        cards:(bySec[i]||[]).map(c=>{ const o={...c}; delete o.__s; return o; })}));
+      S.decks[doc.id] = prepDeck({title:meta.title, subtitle:meta.subtitle, symbol_meaning:meta.symbol_meaning, sections}, doc.id);
+    }
+    S.dbReady = true;
+    saveDecks(); renderHome();
+  }catch(e){}
+}
+async function pushDeckDb(d){
+  if(!S.db) return false;
+  try{
+    await S.db.doc('decks/'+d.id).set({title:d.title, subtitle:d.subtitle, symbol_meaning:d.symbol_meaning,
+      cardCount:d.cards.length, updated:Date.now(),
+      sections:d.sections.map(s=>({name:s.name, note:s.note||null, page:s.page||null}))});
+    const flat = [];
+    d.sections.forEach((s,si)=> s.cards.forEach(c=>{
+      const o={...c}; delete o._tok; delete o.sectionName; delete o.sectionIndex; delete o.sectionNote;
+      o.__s = si; flat.push(o);
+    }));
+    const per = 25;
+    for(let i=0;i*per<flat.length;i++)
+      await S.db.doc('decks/'+d.id+'/chunks/'+i).set({cards:flat.slice(i*per,(i+1)*per)});
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ---------- speech out ---------- */
+let voice = null, audioUnlocked = false;
+function pickVoice(){
+  const vs = speechSynthesis.getVoices();
+  if(!vs.length) return;
+  voice = vs.find(v=>/en[-_]US/i.test(v.lang) && /samantha|aaron|ava|allison|joelle/i.test(v.name))
+       || vs.find(v=>/en[-_]US/i.test(v.lang)) || vs.find(v=>/^en/i.test(v.lang)) || vs[0];
+}
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+
+let speakSeq = 0;
+function stopSpeak(){ speakSeq++; try{ speechSynthesis.cancel(); }catch(e){} S.speaking = false; }
+
+function say(text, opts){
+  opts = opts || {};
+  return new Promise(resolve => {
+    if(!('speechSynthesis' in window) || !text){ resolve(); return; }
+    const my = ++speakSeq;
+    try{ speechSynthesis.cancel(); }catch(e){}
+    const sentences = [];
+    let buf = '';
+    for(const ch of String(text).replace(/\s+/g,' ').trim()){
+      buf += ch;
+      if('.;:!?'.indexOf(ch) >= 0){ sentences.push(buf); buf = ''; }
+    }
+    if(buf.trim()) sentences.push(buf);
+    const parts = sentences.flatMap(p => p.length > 170 ? (p.match(/.{1,170}(\s|$)/g) || [p]) : [p])
+      .map(p => p.trim()).filter(Boolean);
+    if(!parts.length){ resolve(); return; }
+    S.speaking = true; pauseListen();
+    let k = 0;
+    const done = () => { if(my!==speakSeq) return; S.speaking = false; resumeListen(); resolve(); };
+    const go = () => {
+      if(my !== speakSeq) return;
+      if(k >= parts.length){ done(); return; }
+      const u = new SpeechSynthesisUtterance(parts[k++]);
+      if(voice) u.voice = voice;
+      u.rate = opts.rate || S.settings.rate; u.pitch = 1; u.volume = 1; u.lang = (voice && voice.lang) || 'en-US';
+      u.onend = () => setTimeout(go, 10);
+      u.onerror = () => setTimeout(go, 10);
+      try{ speechSynthesis.speak(u); }catch(e){ done(); }
+    };
+    setTimeout(go, 60);
+  });
+}
+function unlockAudio(){
+  if(audioUnlocked || !('speechSynthesis' in window)) return;
+  try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); audioUnlocked = true; }catch(e){}
+}
+
+/* ---------- speech in ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, recRunning = false, recPausedBySpeech = false, micDenied = false;
+
+function buildRec(){
+  if(!SR) return null;
+  const r = new SR();
+  r.lang = 'en-US'; r.continuous = false; r.interimResults = true; r.maxAlternatives = 1;
+  r.onstart = () => { recRunning = true; paintMic(); };
+  r.onresult = e => {
+    let finalTxt = '', interim = '';
+    for(let i = e.resultIndex; i < e.results.length; i++){
+      const t = e.results[i][0].transcript;
+      if(e.results[i].isFinal) finalTxt += t + ' '; else interim += t + ' ';
+    }
+    if(interim.trim()) onHeard(interim.trim(), false);
+    if(finalTxt.trim()) onHeard(finalTxt.trim(), true);
+  };
+  r.onerror = ev => {
+    if(ev.error === 'not-allowed' || ev.error === 'service-not-allowed'){
+      micDenied = true; S.wantListen = false; recRunning = false; paintMic();
+      toast('Microphone blocked — use the buttons, or open this page in Safari directly.');
+      showMicHelp();
+    }
+  };
+  r.onend = () => {
+    recRunning = false; paintMic();
+    if(S.wantListen && !S.speaking && !micDenied){ setTimeout(() => startRec(), 180); }
+  };
+  return r;
+}
+function startRec(){
+  if(!SR || micDenied || recRunning || S.speaking) return;
+  if(!rec) rec = buildRec();
+  try{ rec.start(); }catch(e){ /* already started */ }
+}
+function stopRec(){ S.wantListen = false; try{ rec && rec.stop(); }catch(e){} recRunning = false; paintMic(); }
+function pauseListen(){ if(recRunning){ recPausedBySpeech = true; try{ rec.abort(); }catch(e){} } }
+function resumeListen(){
+  if(recPausedBySpeech || S.wantListen){ recPausedBySpeech = false; if(S.wantListen) setTimeout(startRec, 220); }
+}
+function paintMic(){
+  const m = $('cMic');
+  m.classList.toggle('on', recRunning && S.wantListen);
+  m.classList.toggle('off', !S.wantListen);
+  $('micLbl').textContent = !SR ? 'No mic' : (S.wantListen ? (recRunning ? 'Listening' : 'Waiting') : 'Talk');
+}
+
+/* ---------- commands ---------- */
+const CMDS = [
+  [['next','next one','next card','move on','go on','forward'], 'next'],
+  [['back','go back','previous','previous card','last one','go backwards'], 'back'],
+  [['repeat','again','say again','say that again','read it again','one more time','come again','what was it'], 'repeat'],
+  [['skip','skip it','skip this one','pass'], 'skip'],
+  [['answer','reveal','show answer','show me','tell me','give me the answer','what are they','read the ingredients','read ingredients'], 'reveal'],
+  [['hint','give me a hint','help me out'], 'hint'],
+  [['spell it','spell that','how do you spell it','spelling'], 'spell'],
+  [['how many','how many ingredients','count'], 'count'],
+  [['done','done answering','thats it','that is it','finished','im done','i am done','check it','check me'], 'done'],
+  [['got it','i got it','mark correct','correct','i said that','i knew that','count it'], 'right'],
+  [['missed it','i missed it','mark missed','mark wrong','wrong','no','didnt get it','i didnt get it'], 'wrong'],
+  [['slower','slow down','speak slower'], 'slower'],
+  [['faster','speed up','speak faster'], 'faster'],
+  [['pause','stop','stop listening','be quiet','quiet','shut up','hold on','wait'], 'pause'],
+  [['resume','start listening','keep going','continue','im back','ready'], 'resume'],
+  [['score','my score','how am i doing','progress','how many left'], 'score'],
+  [['tastes like','what does it taste like','description','describe it'], 'tastes'],
+  [['served with','how is it served','service','utensils'], 'served'],
+  [['ask and educate','ask educate','upsell','what can i offer'], 'educate'],
+  [['symbols','allergens','menu symbols','is it vegetarian'], 'symbols'],
+  [['script','delivery script','what do i say'], 'script'],
+  [['sections','menu','section list','what sections'], 'sections'],
+  [['restart','start over','from the beginning'], 'restart'],
+  [['end round','finish','finish round','end it','stop the round','im finished'], 'end'],
+  [['help','commands','what can i say','what can you do'], 'help'],
+  [['home','go home','main menu','exit'], 'home']
+];
+const CMD_MAP = (() => { const m = new Map(); CMDS.forEach(([ph, id]) => ph.forEach(p => m.set(norm(p), id))); return m; })();
+
+function asCommand(text){
+  const n = norm(text);
+  if(CMD_MAP.has(n)) return {id: CMD_MAP.get(n)};
+  const jump = n.match(/^(?:go to|jump to|switch to|study|open)\s+(.+)$/);
+  if(jump && S.deck){
+    const q = jump[1];
+    let best = null, bs = 0;
+    S.deck.sections.forEach((s, i) => {
+      const a = norm(s.name), sc = a === q ? 1 : (a.includes(q) || q.includes(a)) ? 0.75 : 0;
+      if(sc > bs){ bs = sc; best = i; }
+    });
+    if(best !== null) return {id: 'jump', section: best};
+  }
+  return null;
+}
+
+/* ---------- heard pipeline ---------- */
+function onHeard(text, isFinal){
+  if(S.view !== 'stage'){
+    if(isFinal){ const c = asCommand(text); if(c) runCmd(c); }
+    return;
+  }
+  const cmd = asCommand(text);
+  if(cmd){ if(isFinal){ setHeard(text, true); runCmd(cmd); } else setHeard(text, false); return; }
+  setHeard(text, !isFinal);
+  applyAnswer(text);
+  if(isFinal) armSilence();
+}
+function setHeard(text, live){
+  S.transcript = text;
+  $('heardTxt').textContent = text || '';
+  $('heard').classList.toggle('live', !!live);
+}
+function armSilence(){
+  clearTimeout(S.silenceT);
+  if(!S.settings.autoAdvance) return;
+  S.silenceT = setTimeout(() => { if(S.view === 'stage' && S.card && !S.card._graded) gradeCard(); }, S.settings.silence);
+}
+
+/* does this utterance name the dish? (reverse mode) */
+function matchesName(card, text, deck){
+  const at = toks(card.name); if(!at.length) return false;
+  const tArr = toks(text), tSet = new Set(tArr);
+  let matched = 0, distinct = 0;
+  at.forEach(t => { if(fuzzyHas(t, tSet, tArr)){ matched++; if(!deck.generic.has(t)) distinct++; } });
+  const cov = matched / at.length;
+  return cov === 1 || distinct >= 2 || (distinct >= 1 && cov >= 0.6);
+}
+function applyAnswer(text){
+  if(!S.card || S.card._graded) return;
+  const before = S.hit.size;
+  if(S.run && S.run.reverse){
+    if(matchesName(S.card, text, S.deck)) S.hit.add(0);
+    if(S.hit.size !== before){ paintChips(); clearTimeout(S.silenceT);
+      if(S.settings.autoAdvance) S.silenceT = setTimeout(() => { if(!S.card._graded) gradeCard(); }, 600); }
+    return;
+  }
+  matchAnswers(S.card, text, S.deck).forEach(i => S.hit.add(i));
+  if(S.hit.size !== before){ paintChips(); }
+  if(S.hit.size === S.card.answers.length && S.settings.autoAdvance){
+    clearTimeout(S.silenceT);
+    S.silenceT = setTimeout(() => { if(!S.card._graded) gradeCard(); }, 700);
+  }
+}
+
+/* ---------- run control ---------- */
+function buildQueue(mode, arg){
+  const d = S.deck;
+  if(mode === 'section') return d.sections[arg].cards.slice();
+  if(mode === 'misses'){
+    return d.cards.filter(c => (S.stats[key(c)]?.wrong || 0) > 0)
+      .sort((a,b) => (S.stats[key(b)].wrong - S.stats[key(a)].wrong));
+  }
+  return d.cards.slice();
+}
+const key = c => S.deck.id + ':' + c.id;
+
+function startRun(mode, arg){
+  const q = buildQueue(mode, arg);
+  if(!q.length){ toast(mode === 'misses' ? 'No misses saved — run the full deck first.' : 'Nothing to study here.'); return; }
+  S.run = {queue:q, i:0, round:1, results:new Map(), mode, arg, reverse: mode === 'reverse',
+           label: mode === 'section' ? S.deck.sections[arg].name : mode === 'misses' ? 'Your misses'
+                : mode === 'reverse' ? 'Name the dish' : 'Full run'};
+  if(mode === 'reverse') S.run.queue = shuffle(S.deck.cards.filter(c => c.type === 'ingredients'));
+  unlockAudio();
+  show('stage');
+  if(SR && !micDenied){ S.wantListen = true; startRec(); }
+  paintMic();
+  loadCard(0, true);
+}
+function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function loadCard(i, speakIt){
+  const r = S.run; if(!r) return;
+  clearTimeout(S.silenceT); clearTimeout(S.autoAdvanceT);
+  if(i < 0) i = 0;
+  if(i >= r.queue.length){ endRound(); return; }
+  r.i = i;
+  const c = r.queue[i];
+  c._graded = false;
+  S.card = c; S.hit = new Set(); S.revealed = new Set(); S.transcript = '';
+  paintCard();
+  setHeard('', false);
+  $('heardTxt').innerHTML = '<em>' + (SR && !micDenied ? 'Listening — say the ingredients.' : 'Use the buttons below, or type your answer.') + '</em>';
+  if(speakIt !== false) promptCard();
+}
+function promptCard(){
+  const c = S.card, r = S.run;
+  let t;
+  if(r.reverse){
+    t = 'Name the dish. Made with: ' + c.answers.slice(0, 8).join(', ') + '.';
+  } else {
+    t = c.sectionName.replace(/\(.*?\)/g,'') + '. ' + c.name + '.';
+    if(c.pronounced) t += ' Pronounced ' + c.pronounced.replace(/·/g,' ') + '.';
+    if(c.type === 'list') t = c.prompt;
+    else if(S.settings.sayCount) t += ' ' + c.answers.length + ' ingredient' + (c.answers.length===1?'':'s') + '.';
+    if(S.settings.sayTastes && c.tastes_like) t += ' Tastes like: ' + c.tastes_like;
+  }
+  say(t);
+}
+
+function gradeCard(){
+  const c = S.card, r = S.run; if(!c || c._graded) return;
+  c._graded = true;
+  clearTimeout(S.silenceT);
+  const rev = r.reverse;
+  const total = rev ? 1 : c.answers.length;
+  const got = rev ? (S.hit.size ? 1 : 0) : S.hit.size;
+  const pct = Math.round(got / total * 100);
+  const pass = pct >= S.settings.pass;
+  r.results.set(key(c), {pass, pct, got, total, card:c});
+
+  const st = S.stats[key(c)] || {seen:0, wrong:0, lastPct:0, lastAt:0};
+  st.seen++; st.lastPct = pct; st.lastAt = Date.now();
+  if(!pass) st.wrong++; else st.wrong = 0;
+  S.stats[key(c)] = st; saveStats();
+
+  const missed = rev ? (got ? [] : [c.name]) : c.answers.filter((_, i) => !S.hit.has(i));
+  paintChips(true);
+  if(rev) paintResult(pass, got, total, missed, c.name);
+  else paintResult(pass, got, total, missed);
+  paintMeter();
+
+  let spoken = rev
+    ? (pass ? 'Correct. ' + c.name + '.' : 'That one was ' + c.name + '.')
+    : pass ? (got === total ? 'Correct. All ' + total + '.' : 'Good. ' + got + ' of ' + total + '.')
+           : 'You got ' + got + ' of ' + total + '. Missing: ' + missed.join(', ') + '.';
+  say(spoken).then(() => {
+    if(S.settings.autoAdvance && S.run && S.card === c){
+      S.autoAdvanceT = setTimeout(() => { if(S.card === c) loadCard(r.i + 1); }, pass ? 500 : 1400);
+    }
+  });
+}
+
+function endRound(){
+  const r = S.run; if(!r) return;
+  clearTimeout(S.silenceT); clearTimeout(S.autoAdvanceT);
+  const results = [...r.results.values()];
+  const missed = results.filter(x => !x.pass);
+  show('summary');
+  const done = results.length, okc = done - missed.length;
+  $('sumEyebrow').textContent = r.label + (r.round > 1 ? ' · retry round ' + r.round : '');
+  $('sumTitle').textContent = missed.length === 0 ? (r.round > 1 ? 'All clear.' : 'Clean run.') : missed.length + ' to go back over';
+  $('sumBody').textContent = missed.length === 0
+    ? 'You cleared every card in this round. Nothing left to retry.'
+    : 'You cleared ' + okc + ' of ' + done + '. The ' + missed.length + ' below come back next round — same cards, until you get them all.';
+  $('sumStats').innerHTML =
+    stat(okc, 'cleared') + stat(missed.length, 'missed') +
+    stat(done ? Math.round(results.reduce((a,x)=>a+x.pct,0)/done) + '%' : '—', 'avg recall');
+
+  const acts = $('sumActions'); acts.innerHTML = '';
+  if(missed.length){
+    acts.appendChild(btnEl('primary', 'Retry these ' + missed.length, 'Round ' + (r.round + 1) + ' — only what you missed', 'Go', () => {
+      S.run = {queue: missed.map(m => m.card), i:0, round: r.round + 1, results:new Map(),
+               mode:r.mode, reverse:r.reverse, label:r.label};
+      show('stage'); if(SR && !micDenied){ S.wantListen = true; startRec(); } loadCard(0, true);
+    }));
+  }
+  acts.appendChild(btnEl('', 'Run it again from the top', r.label + ' — all ' + (r.mode==='section'||r.mode==='misses'||r.mode==='reverse' ? results.length : S.deck.cards.length) + ' cards', 'Go', () => startRun(r.mode, r.arg)));
+  acts.appendChild(btnEl('', 'Back to home', 'Pick a different section or mode', 'Home', () => show('home')));
+
+  $('sumMissWrap').classList.toggle('hidden', !missed.length);
+  $('sumMisses').innerHTML = missed.map(m =>
+    '<div class="miss-row"><span class="nm">' + esc(m.card.name) + '</span><span class="sc num">' + m.got + '/' + m.total + '</span></div>').join('');
+
+  say(missed.length === 0 ? 'Round complete. You cleared everything.'
+    : 'Round complete. ' + okc + ' cleared, ' + missed.length + ' to go back over. Say next to start the retry round.');
+  S.pendingRetry = missed.length ? () => acts.querySelector('.btn').click() : null;
+  renderHome();
+}
+
+/* ---------- command runner ---------- */
+function runCmd(cmd){
+  const c = S.card, r = S.run;
+  switch(cmd.id){
+    case 'next':
+      if(S.view === 'summary' && S.pendingRetry){ S.pendingRetry(); return; }
+      if(!r) return; if(c && !c._graded) gradeCard(); else loadCard(r.i + 1); return;
+    case 'back': if(r) loadCard(r.i - 1); return;
+    case 'repeat': if(c) promptCard(); return;
+    case 'skip': if(r){ clearTimeout(S.autoAdvanceT); if(c) c._graded = true; loadCard(r.i + 1); } return;
+    case 'reveal': revealAll(); return;
+    case 'hint': hint(); return;
+    case 'spell': spell(); return;
+    case 'count': if(c) say('There are ' + c.answers.length + '. You have ' + S.hit.size + '.'); return;
+    case 'done': if(c && !c._graded) gradeCard(); return;
+    case 'right': forceGrade(true); return;
+    case 'wrong': forceGrade(false); return;
+    case 'slower': S.settings.rate = Math.max(.6, +(S.settings.rate - .15).toFixed(2)); saveSettings(); say('Slower.'); return;
+    case 'faster': S.settings.rate = Math.min(1.6, +(S.settings.rate + .15).toFixed(2)); saveSettings(); say('Faster.'); return;
+    case 'pause': stopSpeak(); stopRec(); toast('Paused. Tap the mic to start again.'); return;
+    case 'resume': S.wantListen = true; startRec(); toast('Listening.'); return;
+    case 'score': sayScore(); return;
+    case 'tastes': if(c?.tastes_like) say('Tastes like: ' + c.tastes_like); else say('No description on this card.'); showDetail(); return;
+    case 'served': if(c?.served_with) say('Served with: ' + c.served_with); else say('Nothing special. Standard service.'); showDetail(); return;
+    case 'educate': if(c?.ask_educate) say('Ask and educate: ' + c.ask_educate); else say('Nothing extra on this one.'); showDetail(); return;
+    case 'symbols': saySymbols(); return;
+    case 'script': if(c?.delivery_script) say('Delivery script: ' + c.delivery_script); else say('No delivery script on this card.'); showDetail(); return;
+    case 'sections': openPanel('sections'); return;
+    case 'restart': if(r) { S.run.results = new Map(); loadCard(0, true); } return;
+    case 'end': if(r) endRound(); return;
+    case 'help': openPanel('commands'); say('Opening the command list.'); return;
+    case 'home': show('home'); say('Home.'); return;
+    case 'jump': startRun('section', cmd.section); return;
+  }
+}
+function forceGrade(pass){
+  const c = S.card; if(!c) return;
+  if(pass){ if(S.run && S.run.reverse) S.hit.add(0); else c.answers.forEach((_, i) => S.hit.add(i)); }
+  else S.hit = new Set();
+  if(!c._graded) gradeCard();
+  else {
+    const rec = S.run.results.get(key(c)); if(!rec) return;
+    rec.pass = pass;
+    const st = S.stats[key(c)]; if(st){ if(pass) st.wrong = Math.max(0, st.wrong - 1); else st.wrong++; saveStats(); }
+    paintResult(pass, rec.got, rec.total, c.answers.filter((_, i) => !S.hit.has(i)));
+    paintMeter(); toast(pass ? 'Marked correct' : 'Marked missed');
+  }
+}
+function revealAll(){
+  const c = S.card; if(!c) return;
+  if(S.run && S.run.reverse){
+    paintResult(false, 0, 1, [c.name], c.name);
+    say('It is ' + c.name + '.'); return;
+  }
+  c.answers.forEach((_, i) => { if(!S.hit.has(i)) S.revealed.add(i); });
+  paintChips();
+  say((c.type === 'list' ? '' : 'Made with: ') + c.answers.join(', ') + '.');
+}
+function hint(){
+  const c = S.card; if(!c) return;
+  if(S.run && S.run.reverse){
+    const w = c.name.split(/\s+/);
+    say('It starts with the letter ' + c.name[0] + ', and it is ' + w.length + ' word' + (w.length === 1 ? '' : 's') + '.');
+    return;
+  }
+  const i = c.answers.findIndex((_, k) => !S.hit.has(k) && !S.revealed.has(k));
+  if(i < 0){ say('You have them all.'); return; }
+  const w = c.answers[i].split(/\s+/);
+  say('Starts with ' + w[0] + (w.length > 1 ? ', ' + (w.length - 1) + ' more word' + (w.length > 2 ? 's' : '') : '') + '.');
+  S.revealed.add(i); paintChips();
+}
+function spell(){
+  const c = S.card; if(!c) return;
+  const i = c.answers.findIndex((_, k) => !S.hit.has(k));
+  const t = (S.run && S.run.reverse) ? c.name : (i < 0 ? c.name : c.answers[i]);
+  say(t.replace(/[^A-Za-z0-9 ]/g,'').split('').join(' ').replace(/\s{2,}/g,', '), {rate: Math.min(1, S.settings.rate)});
+}
+function sayScore(){
+  const r = S.run;
+  if(!r){ say('No round running.'); return; }
+  const res = [...r.results.values()], ok = res.filter(x => x.pass).length;
+  say('Card ' + (r.i + 1) + ' of ' + r.queue.length + '. ' + ok + ' cleared, ' + (res.length - ok) + ' missed so far.');
+}
+function saySymbols(){
+  const c = S.card; if(!c) return;
+  if(!c.symbols?.length){ say('No menu symbols on this dish.'); return; }
+  say(c.symbols.map(s => S.deck.symbol_meaning[s] || s).join('. ') + '.');
+}
+
+/* ---------- painting ---------- */
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+function paintCard(){
+  const c = S.card, r = S.run;
+  $('pillSection').textContent = c.sectionName;
+  $('pillPos').textContent = (r.i + 1) + ' / ' + r.queue.length;
+  $('pillRound').classList.toggle('hidden', r.round < 2);
+  $('pillRound').textContent = 'Retry round ' + r.round;
+  $('pillRev').classList.toggle('hidden', !r.reverse);
+
+  $('cardTitle').textContent = r.reverse ? 'Which dish is this?' : (c.type === 'list' ? c.prompt : c.name);
+  $('cardSay').classList.toggle('hidden', !c.pronounced || r.reverse);
+  if(c.pronounced) $('cardSay').textContent = 'Pronounced ' + c.pronounced;
+
+  $('cardBadges').innerHTML = (r.reverse ? [] : (c.symbols || []))
+    .map(s => '<span class="badge"><i>' + esc(s) + '</i>' + esc(S.deck.symbol_meaning[s] || s) + '</span>').join('')
+    + (c.notes?.length && !r.reverse ? c.notes.map(n => '<span class="badge" style="padding-left:10px">' + esc(n) + '</span>').join('') : '');
+
+  $('askLabel').textContent = c.type === 'list' && !r.reverse ? 'Items' : 'Made with';
+  $('askCount').textContent = r.reverse ? 'Name the dish' : c.answers.length + (c.answers.length === 1 ? ' item' : ' items') + ' to name';
+  $('resultSlot').innerHTML = '';
+  $('detail').classList.add('hidden');
+  paintChips(); paintMeter();
+}
+function paintChips(final){
+  const c = S.card, r = S.run;
+  if(r.reverse){
+    $('chips').innerHTML = c.answers.map(a => '<span class="chip">' + esc(a) + '</span>').join('');
+    return;
+  }
+  $('chips').innerHTML = c.answers.map((a, i) => {
+    const hit = S.hit.has(i), shown = S.revealed.has(i) || final;
+    const cls = hit ? 'chip hit' : (shown ? 'chip shown' : 'chip');
+    const body = (hit || shown) ? esc(a)
+      : '<span class="mask">' + a.split(/\s+/).map(w => '—'.repeat(Math.min(6, Math.max(2, Math.round(w.length / 2))))).join(' ') + '</span>';
+    const tick = hit ? '<svg class="tick" viewBox="0 0 24 24"><path d="M4 12.5l5.2 5.2L20 7"/></svg>' : '';
+    return '<button class="' + cls + '" data-i="' + i + '">' + tick + body + '</button>';
+  }).join('');
+}
+function paintResult(pass, got, total, missed, revealName){
+  if(revealName !== undefined){
+    $('resultSlot').innerHTML =
+      '<div class="result ' + (pass ? 'pass' : 'fail') + '">' +
+      '<h3>' + esc(revealName) + '</h3><p>' + (pass ? 'You named it.' : 'That was the dish.') + '</p></div>';
+    return;
+  }
+  $('resultSlot').innerHTML =
+    '<div class="result ' + (pass ? 'pass' : 'fail') + '">' +
+    '<h3>' + (pass ? (got === total ? 'All ' + total + '. Clean.' : got + ' of ' + total + ' — pass') : got + ' of ' + total + ' — missed') + '</h3>' +
+    (missed.length ? '<p>Missing: ' + esc(missed.join(', ')) + '</p>' : '<p>Nothing missed.</p>') +
+    '</div>';
+}
+function showDetail(){
+  const c = S.card; if(!c) return;
+  const rows = [];
+  if(c.tastes_like) rows.push(['Tastes like', c.tastes_like]);
+  if(c.ask_educate) rows.push(['Ask & educate', c.ask_educate]);
+  if(c.served_with) rows.push(['Served with', c.served_with]);
+  if(c.delivery_script) rows.push(['Delivery script', c.delivery_script]);
+  if(c.sectionNote) rows.push(['Section note', c.sectionNote]);
+  if(!rows.length) return;
+  $('detail').innerHTML = rows.map(([k, v]) => '<div><span class="eyebrow">' + esc(k) + '</span><p>' + esc(v) + '</p></div>').join('');
+  $('detail').classList.remove('hidden');
+}
+function paintMeter(){
+  const r = S.run;
+  const m = $('meter').children;
+  if(!r){ m[0].style.width = '0'; m[1].style.width = '0'; $('mLeft').textContent = 'Not started'; $('mRight').textContent = ''; return; }
+  const res = [...r.results.values()], ok = res.filter(x => x.pass).length, bad = res.length - ok, n = r.queue.length;
+  m[0].style.width = (ok / n * 100) + '%'; m[1].style.width = (bad / n * 100) + '%';
+  $('mLeft').innerHTML = '<b>' + (r.i + 1) + '</b> of ' + n + ' · ' + esc(r.label);
+  $('mRight').innerHTML = '<b>' + ok + '</b> cleared · <b>' + bad + '</b> missed';
+}
+function stat(v, l){ return '<div class="stat"><b>' + esc(v) + '</b><span>' + esc(l) + '</span></div>'; }
+function btnEl(cls, title, sub, kbd, fn){
+  const b = document.createElement('button');
+  b.className = 'btn ' + cls;
+  b.innerHTML = '<div class="lede"><b>' + esc(title) + '</b><span>' + esc(sub) + '</span></div><span class="kbd">' + esc(kbd) + '</span>';
+  b.onclick = fn; return b;
+}
+let toastT;
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3200); }
+
+/* ---------- home ---------- */
+function renderHome(){
+  const d = S.deck;
+  $('deckName').textContent = d.title;
+  $('deckSub').textContent = d.subtitle || (d.cards.length + ' cards');
+  document.querySelector('.hero .eyebrow').textContent =
+    'Voice drill · ' + d.cards.length + ' cards · ' + d.sections.length + ' sections';
+
+  const missCards = d.cards.filter(c => (S.stats[key(c)]?.wrong || 0) > 0);
+  const seen = d.cards.filter(c => S.stats[key(c)]?.seen);
+  $('homeStats').innerHTML = stat(d.cards.length, 'cards') + stat(seen.length, 'studied') + stat(missCards.length, 'to redo');
+  $('missesLabel').textContent = missCards.length ? 'Drill my ' + missCards.length + ' misses' : 'Drill my misses';
+  $('missesSub').textContent = missCards.length ? 'Only the cards you have gotten wrong, hardest first' : 'Nothing saved yet — finish a run first';
+
+  const fn = $('frameNote');
+  if(fn) fn.innerHTML = (isFramed && SR)
+    ? '<a class="btn" href="' + esc(location.href) + '" target="_blank" rel="noopener" style="border-color:var(--coral)">' +
+      '<div class="lede"><b style="color:var(--coral)">Microphone blocked by the page this is embedded in</b>' +
+      '<span>Inside this window the microphone stays blocked. Opening it on its own is what lets iPhone ask for mic access.</span></div>' +
+      '<span class="kbd" style="border-color:var(--coral);color:var(--coral)">Open</span></a>'
+    : '';
+
+  $('secList').innerHTML = d.sections.map((s, i) => {
+    const cards = s.cards, bad = cards.filter(c => (S.stats[key(c)]?.wrong || 0) > 0).length;
+    const seenN = cards.filter(c => S.stats[key(c)]?.seen).length;
+    const cls = bad ? 'some' : (seenN === cards.length && cards.length ? 'done' : '');
+    return '<button class="sec-row" data-sec="' + i + '"><span class="dot ' + cls + '"></span>' +
+      '<span class="nm">' + esc(s.name) + '</span><span class="ct num">' + cards.length + '</span></button>';
+  }).join('');
+}
+
+/* ---------- views ---------- */
+function show(v){
+  S.view = v;
+  ['home', 'stage', 'summary'].forEach(x => $(x).classList.toggle('hidden', x !== v));
+  $('bar').classList.toggle('hidden', v !== 'stage');
+  if(v !== 'stage'){ clearTimeout(S.silenceT); clearTimeout(S.autoAdvanceT); }
+  if(v === 'home'){ stopSpeak(); stopRec(); S.run = null; S.card = null; renderHome(); paintMeter(); }
+  window.scrollTo(0, 0);
+}
+
+/* ---------- panels ---------- */
+function openPanel(which){
+  const b = $('panelBody');
+  b.innerHTML = which === 'commands' ? panelCommands()
+              : which === 'sections' ? panelSections()
+              : which === 'decks'    ? panelDecks()
+              : panelMenu();
+  $('panel').classList.add('open'); $('scrim').classList.add('open');
+  wirePanel(which);
+}
+function closePanel(){ $('panel').classList.remove('open'); $('scrim').classList.remove('open'); }
+
+function panelMenu(){
+  const s = S.settings;
+  return '<h2>Settings</h2><p class="sub">Everything here is saved and follows you between your phone and computer.</p>' +
+  '<div class="grp"><span class="eyebrow">Marking</span>' +
+  optSeg('Pass mark', 'What counts as knowing the dish. The package sets the bar at 100%.', 'pass',
+    [[100,'100%'],[80,'80%'],[60,'60%']], s.pass) +
+  optSeg('Auto-advance', 'Move on by itself after you stop talking. Off means you say next.', 'autoAdvance',
+    [[true,'On'],[false,'Off']], s.autoAdvance) +
+  optSeg('Pause before marking', 'How long the silence has to be before it grades you.', 'silence',
+    [[2500,'2.5s'],[3500,'3.5s'],[5000,'5s']], s.silence) +
+  '</div>' +
+  '<div class="grp"><span class="eyebrow">Reading</span>' +
+  '<div class="opt-row"><div class="lb"><b>Speed</b><span>How fast it reads to you</span></div>' +
+  '<input type="range" id="setRate" min="0.6" max="1.6" step="0.05" value="' + s.rate + '"></div>' +
+  optSeg('Say the count', 'Tells you how many ingredients before you start.', 'sayCount', [[true,'On'],[false,'Off']], s.sayCount) +
+  optSeg('Read "tastes like"', 'Also reads the guest description on each card.', 'sayTastes', [[true,'On'],[false,'Off']], s.sayTastes) +
+  optSeg('Theme', '', 'theme', [['auto','Auto'],['light','Light'],['dark','Dark']], LS.get('theme','auto')) +
+  '</div>' +
+  '<div class="grp"><span class="eyebrow">More</span>' +
+  '<button class="btn" id="goCommands"><div class="lede"><b>Voice commands</b><span>Everything you can say</span></div><span class="kbd">List</span></button>' +
+  '<div style="height:8px"></div>' +
+  '<button class="btn" id="goDecks"><div class="lede"><b>Decks</b><span>Add a new PDF, or switch decks</span></div><span class="kbd">' + Object.keys(S.decks).length + '</span></button>' +
+  '<div style="height:8px"></div>' +
+  '<div style="height:8px"></div>' +
+  '<button class="btn" id="goMic"><div class="lede"><b>Microphone &amp; diagnostics</b><span>Check why voice is not working</span></div><span class="kbd">Check</span></button>' +
+  '<div style="height:8px"></div>' +
+  '<button class="btn" id="goReset"><div class="lede"><b>Clear my progress</b><span>Wipes the miss history for this deck</span></div><span class="kbd">Reset</span></button>' +
+  '</div>';
+}
+function optSeg(title, sub, k, opts, cur){
+  return '<div class="opt-row"><div class="lb"><b>' + esc(title) + '</b>' + (sub ? '<span>' + esc(sub) + '</span>' : '') + '</div>' +
+    '<div class="seg" data-k="' + k + '">' + opts.map(([v, l]) =>
+      '<button data-v="' + esc(String(v)) + '" aria-pressed="' + (String(v) === String(cur)) + '">' + esc(l) + '</button>').join('') + '</div></div>';
+}
+function panelCommands(){
+  const groups = [
+    ['Moving', [['next / move on','Grade this card and go forward'],['back / previous','Previous card'],['repeat / say it again','Read the card again'],['skip','Skip without marking it'],['restart','Start this round over'],['end round / finish','Stop here and see the summary'],['home','Back to the main screen']]],
+    ['Answering', [['done / that\'s it','Finish answering and get marked'],['answer / read the ingredients','Read the whole list out'],['hint','First word of one you are missing'],['spell it','Spells the next missing one'],['how many','How many left to name']]],
+    ['Fixing the mark', [['got it / mark correct','Override — count this card as known'],['missed it / mark wrong','Override the other way']]],
+    ['Asking about the dish', [['tastes like','The guest description'],['served with','Utensils and presets'],['ask and educate','Upsells and options'],['symbols','R, V and G on this dish'],['script','The delivery script, where there is one']]],
+    ['Control', [['slower / faster','Change the reading speed'],['pause / stop','Stop talking and listening'],['resume / keep going','Start listening again'],['score / how am I doing','Where you are in the round'],['sections','Open the section list'],['go to desserts','Jump straight to a section'],['help','This list']]]
+  ];
+  return '<h2>What you can say</h2><p class="sub">Say the whole phrase on its own — mid-sentence words are treated as part of your answer. Every one of these has a button too.</p>' +
+    groups.map(([t, rows]) => '<div class="grp"><span class="eyebrow">' + esc(t) + '</span><div class="cmd-grid">' +
+      rows.map(([c, d]) => '<div class="cmd"><code>' + esc(c) + '</code><span>' + esc(d) + '</span></div>').join('') +
+      '</div></div>').join('') +
+    '<button class="btn" id="backMenu"><div class="lede"><b>Back to settings</b><span></span></div><span class="kbd">Back</span></button>';
+}
+function panelSections(){
+  return '<h2>Sections</h2><p class="sub">In the order they run in the package.</p><div class="sec-list">' +
+    S.deck.sections.map((s, i) => '<button class="sec-row" data-psec="' + i + '"><span class="dot"></span>' +
+      '<span class="nm">' + esc(s.name) + '</span><span class="ct num">' + s.cards.length + '</span></button>').join('') + '</div>';
+}
+function panelDecks(){
+  const ids = Object.keys(S.decks);
+  return '<h2>Decks</h2><p class="sub">Drop in another training PDF built the same way — a section page, then a page per item with a MADE WITH list — and it becomes a deck with all the same voice controls.</p>' +
+    '<div class="grp"><span class="eyebrow">Your decks</span><div class="sec-list">' +
+    ids.map(id => '<button class="sec-row" data-deck="' + esc(id) + '"><span class="dot ' + (id === S.deck.id ? 'done' : '') + '"></span>' +
+      '<span class="nm">' + esc(S.decks[id].title) + '</span><span class="ct num">' + S.decks[id].cards.length + '</span></button>').join('') +
+    '</div></div>' +
+    '<div class="grp"><span class="eyebrow">Add a deck</span>' +
+    '<div class="drop" id="drop"><b>Drop a PDF here</b><span>or tap to choose a file</span>' +
+    '<input type="file" id="pdfIn" accept="application/pdf" style="display:none"></div>' +
+    '<div id="impStatus" class="note"></div>' +
+    '<div class="warn">Big PDFs are best added from a computer — it reads the whole file in the browser. Once it is added it syncs to your phone on its own.</div>' +
+    '</div>' +
+    '<button class="btn" id="backMenu"><div class="lede"><b>Back to settings</b><span></span></div><span class="kbd">Back</span></button>';
+}
+
+function wirePanel(which){
+  $('panelBody').querySelectorAll('.seg').forEach(seg => {
+    seg.onclick = e => {
+      const b = e.target.closest('button'); if(!b) return;
+      const k = seg.dataset.k; let v = b.dataset.v;
+      if(v === 'true') v = true; else if(v === 'false') v = false; else if(/^\d+(\.\d+)?$/.test(v)) v = +v;
+      seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+      if(k === 'theme'){ applyTheme(v); LS.set('theme', v); return; }
+      S.settings[k] = v; saveSettings();
+    };
+  });
+  const rate = $('setRate');
+  if(rate) rate.oninput = () => { S.settings.rate = +rate.value; saveSettings(); };
+  const gc = $('goCommands'); if(gc) gc.onclick = () => openPanel('commands');
+  const gd = $('goDecks'); if(gd) gd.onclick = () => openPanel('decks');
+  const bm = $('backMenu'); if(bm) bm.onclick = () => openPanel('menu');
+  const gm = $('goMic'); if(gm) gm.onclick = () => showMicHelp(lastMicErr || {});
+  const gr = $('goReset'); if(gr) gr.onclick = () => {
+    S.deck.cards.forEach(c => delete S.stats[key(c)]); saveStats(); renderHome(); toast('Progress cleared for this deck.');
+  };
+  $('panelBody').querySelectorAll('[data-psec]').forEach(el => el.onclick = () => { closePanel(); startRun('section', +el.dataset.psec); });
+  $('panelBody').querySelectorAll('[data-deck]').forEach(el => el.onclick = () => {
+    S.deck = S.decks[el.dataset.deck]; LS.set('lastDeck', S.deck.id); closePanel(); show('home'); toast('Switched to ' + S.deck.title);
+  });
+  if(which === 'decks') wireImport();
+}
+function applyTheme(v){
+  if(v === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', v);
+}
+
+/* ---------- PDF import ---------- */
+function wireImport(){
+  const drop = $('drop'), inp = $('pdfIn');
+  if(!drop) return;
+  drop.onclick = () => inp.click();
+  inp.onchange = () => inp.files[0] && importPdf(inp.files[0]);
+  ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if(f) importPdf(f); });
+}
+function loadScript(src){
+  return new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('load ' + src)); document.head.appendChild(s);
+  });
+}
+async function ensurePdfjs(){
+  if(window.pdfjsLib) return;
+  const base = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/' + PDFJS_VER + '/';
+  await loadScript(base + 'pdf.min.js');
+  try{ await loadScript(base + 'pdf.worker.min.js'); }catch(e){}
+  if(window.pdfjsLib) window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + 'pdf.worker.min.js';
+}
+const impSay = m => { const el = $('impStatus'); if(el) el.textContent = m; };
+
+async function importPdf(file){
+  try{
+    impSay('Loading the PDF reader…');
+    await ensurePdfjs();
+    if(!window.pdfjsLib) throw new Error('PDF reader would not load');
+    impSay('Reading ' + file.name + '…');
+    const buf = await file.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({data: buf}).promise;
+    const pages = [];
+    for(let p = 1; p <= pdf.numPages; p++){
+      if(p % 10 === 0) impSay('Reading page ' + p + ' of ' + pdf.numPages + '…');
+      const pg = await pdf.getPage(p);
+      pages.push(linesFrom(await pg.getTextContent()));
+    }
+    impSay('Building cards…');
+    const raw = buildDeckFromPages(pages, file.name.replace(/\.pdf$/i, ''));
+    if(!raw.sections.reduce((a, s) => a + s.cards.length, 0))
+      throw new Error('No “MADE WITH” pages found — this PDF is not laid out like a training package');
+    const id = 'd' + Date.now().toString(36);
+    const deck = prepDeck(raw, id);
+    S.decks[id] = deck; saveDecks();
+    const synced = await pushDeckDb(deck);
+    S.deck = deck; LS.set('lastDeck', id);
+    closePanel(); show('home');
+    toast(deck.cards.length + ' cards from ' + deck.sections.length + ' sections' + (synced ? ' · synced' : ''));
+  }catch(e){
+    impSay('Could not read that: ' + (e.message || e) + '. It still works as a deck if you have the text — ask Claude to add it.');
+  }
+}
+/* group text items into lines, keeping the left edge so indentation survives */
+function linesFrom(tc){
+  const rows = new Map();
+  tc.items.forEach(it => {
+    if(!it.str || !it.str.trim()) return;
+    const x = it.transform[4], y = Math.round(it.transform[5] * 2) / 2;
+    let bucket = null;
+    for(const k of rows.keys()){ if(Math.abs(k - y) <= 3){ bucket = k; break; } }
+    if(bucket === null){ bucket = y; rows.set(bucket, []); }
+    rows.get(bucket).push({x, s: it.str});
+  });
+  return [...rows.entries()].sort((a, b) => b[0] - a[0]).map(([y, parts]) => {
+    parts.sort((a, b) => a.x - b.x);
+    let s = '', prevEnd = null;
+    parts.forEach(p => { if(prevEnd !== null && p.x - prevEnd > 6) s += ' '; s += p.str; prevEnd = p.x + p.s.length * 5; });
+    return {y, x: parts[0].x, text: s.replace(/\s+/g, ' ').trim()};
+  }).filter(l => l.text);
+}
+function buildDeckFromPages(pages, title){
+  const SYM = {R:'May be raw or undercooked', V:'Vegetarian', G:'Gluten-aware'};
+  const sections = []; let cur = null, cid = 0;
+  const isDivider = ls => ls.length <= 3 && ls.length > 0 &&
+    !ls.some(l => /^MADE WITH/i.test(l.text) || /TASTES LIKE/i.test(l.text)) &&
+    /[A-Za-z]/.test(ls[0].text) && ls[0].text === ls[0].text.toUpperCase();
+
+  for(let i = 0; i < pages.length; i++){
+    const ls = pages[i];
+    if(!ls.length) continue;
+    const mw = ls.findIndex(l => /^MADE WITH/i.test(l.text));
+    if(mw < 0){
+      if(isDivider(ls) && ls[0].text.length < 44){
+        cur = {name: ls[0].text.trim(), note: ls.slice(1).map(l => l.text).join(' ').trim() || null, page: i + 1, cards: []};
+        sections.push(cur);
+      }
+      continue;
+    }
+    if(i < 4) continue;                       // front matter / legend page
+    if(!cur){ cur = {name: 'Menu', note: null, page: i + 1, cards: []}; sections.push(cur); }
+
+    const nameLines = [], symbols = [];
+    let pron = null;
+    for(let k = 0; k < mw; k++){
+      const t = ls[k].text.trim();
+      if(k === 0) continue;                    // the small menu-section label
+      if(/^pronounced/i.test(t)) pron = t.replace(/^pronounced\s*:?\s*/i, '');
+      else nameLines.push(t);
+    }
+    (ls[mw].text.slice(9).match(/\b[RVG]\b/g) || []).forEach(s => { if(!symbols.includes(s)) symbols.push(s); });
+
+    const bodyX = ls.slice(mw + 1).map(l => l.x);
+    const baseX = bodyX.length ? Math.min(...bodyX) : 0;
+    const answers = [], notes = []; let script = [], mode = null;
+    ls.slice(mw + 1).forEach(l => {
+      let t = l.text.trim();
+      if(/^DELIVERY SCRIPT$/i.test(t)){ mode = 'script'; return; }
+      if(mode === 'script'){ script.push(t); return; }
+      if(l.x > baseX + 14){ notes.push(t); return; }
+      t = t.replace(/\s{2,}[RVG]$/, '').trim();
+      if(t && /^[a-z]/.test(t) && answers.length) answers[answers.length - 1] += ' ' + t;
+      else if(t) answers.push(t);
+    });
+
+    let prac = {};
+    if(pages[i + 1] && pages[i + 1].some(l => /TASTES LIKE/i.test(l.text))){
+      prac = practiceOf(pages[i + 1].map(l => l.text)); i++;
+    }
+    cid++;
+    cur.cards.push({id: 'c' + cid, type: 'ingredients', name: nameLines.join(' ').replace(/\s+/g, ' ').trim(),
+      pronounced: pron, menu_label: ls[0].text.trim(), symbols, answers, notes,
+      delivery_script: script.join(' ').trim() || null,
+      tastes_like: prac['TASTES LIKE'] || null, ask_educate: prac['ASK & EDUCATE'] || null,
+      served_with: prac['SERVED WITH'] || null, share_the_story: prac['SHARE THE STORY'] || null, page: i + 1});
+  }
+  return {title, subtitle: sections.reduce((a, s) => a + s.cards.length, 0) + ' cards · imported', symbol_meaning: SYM,
+    sections: sections.filter(s => s.cards.length)};
+}
+function practiceOf(lines){
+  const HEADS = ['TASTES LIKE','ASK & EDUCATE','SERVED WITH','SHARE THE STORY','NOTES'];
+  const out = {}; let cur = null;
+  lines.forEach(t => {
+    const h = HEADS.find(h => t.trim().toUpperCase() === h);
+    if(h){ cur = h; out[cur] = []; } else if(cur) out[cur].push(t.trim());
+  });
+  const r = {};
+  Object.keys(out).forEach(k => { const v = out[k].join(' ').trim(); if(v && v.replace(/\.$/,'').toUpperCase() !== 'N/A') r[k] = v; });
+  return r;
+}
+
+/* ---------- mic access + diagnosis ---------- */
+const isFramed = (() => { try{ return window.self !== window.top; }catch(e){ return true; } })();
+let lastMicErr = null;
+
+/* Ask for the mic explicitly. This is the call that actually raises the iOS
+   prompt — SpeechRecognition on its own often fails silently inside a frame. */
+async function requestMic(){
+  if(!window.isSecureContext) return (lastMicErr = {reason:'insecure'});
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+    return (lastMicErr = {reason:'no-api'});
+  try{
+    const s = await navigator.mediaDevices.getUserMedia({audio:true});
+    s.getTracks().forEach(t => t.stop());
+    lastMicErr = null;
+    return {ok:true};
+  }catch(e){
+    return (lastMicErr = {reason:'denied', name:e.name || 'Error', msg:e.message || String(e)});
+  }
+}
+async function micState(){
+  try{ return (await navigator.permissions.query({name:'microphone'})).state; }catch(e){ return 'unknown'; }
+}
+async function showMicHelp(err){
+  err = err || lastMicErr || {};
+  const direct = location.href;
+  const framed = isFramed;
+  const why = err.reason === 'no-sr'   ? 'This browser has no speech recognition built in.'
+            : err.reason === 'insecure'? 'The page is not running over https, so browsers block the mic.'
+            : err.reason === 'no-api'  ? 'This browser did not expose the microphone to the page at all.'
+            : framed                   ? 'The page is running inside another app’s window, and that window is not passing the microphone through. This is the usual cause on iPhone.'
+            : 'Your browser refused the microphone (' + esc(err.name || 'no reason given') + ').';
+
+  $('panelBody').innerHTML =
+    '<h2>Can’t reach the microphone</h2>' +
+    '<p class="sub">' + why + ' Reading out loud still works, and you can answer by typing — the marking is identical.</p>' +
+    (framed ? '<div class="grp"><span class="eyebrow">The fix</span>' +
+      '<a class="btn primary" href="' + esc(direct) + '" target="_blank" rel="noopener">' +
+      '<div class="lede"><b>Open this page on its own</b>' +
+      '<span>Opens outside the app window, where the mic prompt can actually appear. Tap Talk again there and choose Allow.</span></div>' +
+      '<span class="kbd">Open</span></a>' +
+      '<div class="note">On iPhone, bookmark that page or add it to your Home Screen and study from there from now on.</div>' +
+      '</div>' : '') +
+    '<div class="grp"><span class="eyebrow">If it still refuses</span><div class="cmd-grid">' +
+    '<div class="cmd"><code>iPhone settings</code><span>Settings → Safari → Microphone → Allow. Then reload this page.</span></div>' +
+    '<div class="cmd"><code>Per-site</code><span>In Safari tap <b>aA</b> in the address bar → Website Settings → Microphone → Allow.</span></div>' +
+    '<div class="cmd"><code>Answer by typing</code><span>Tap <b>Type instead</b> in the button bar. Everything else — reading aloud, hints, miss tracking, retry rounds — works exactly the same.</span></div>' +
+    '</div></div>' +
+    '<div class="grp"><span class="eyebrow">Diagnostics</span><div class="cmd-grid" id="diagBox"></div></div>';
+  $('panel').classList.add('open'); $('scrim').classList.add('open');
+
+  const rows = [
+    ['In a frame', framed ? 'yes — this is usually the problem' : 'no'],
+    ['Secure (https)', window.isSecureContext ? 'yes' : 'no'],
+    ['Speech recognition', SR ? 'available' : 'missing'],
+    ['Speech output', ('speechSynthesis' in window) ? 'available' : 'missing'],
+    ['Mic permission', await micState()],
+    ['Last error', err.name ? err.name + ' — ' + (err.msg || '') : (err.reason || 'none')]
+  ];
+  const box = $('diagBox');
+  if(box) box.innerHTML = rows.map(([k, v]) =>
+    '<div class="cmd"><code>' + esc(k) + '</code><span>' + esc(v) + '</span></div>').join('');
+}
+
+/* ---------- events ---------- */
+$('btnMenu').onclick = () => openPanel('menu');
+$('btnHome').onclick = () => show('home');
+$('scrim').onclick = closePanel;
+
+$('startFull').onclick = () => startRun('all');
+$('startMisses').onclick = () => startRun('misses');
+$('startReverse').onclick = () => startRun('reverse');
+$('secList').onclick = e => { const b = e.target.closest('[data-sec]'); if(b) startRun('section', +b.dataset.sec); };
+
+$('cMic').onclick = async () => {
+  unlockAudio();
+  if(S.wantListen){ stopRec(); toast('Mic off'); return; }
+  if(!SR){ showMicHelp({reason:'no-sr'}); return; }
+  const got = await requestMic();
+  if(!got.ok){ micDenied = true; paintMic(); showMicHelp(got); return; }
+  micDenied = false; S.wantListen = true; startRec(); paintMic();
+};
+$('cBack').onclick = () => runCmd({id:'back'});
+$('cNext').onclick = () => runCmd({id:'next'});
+$('cRepeat').onclick = () => runCmd({id:'repeat'});
+$('cReveal').onclick = () => runCmd({id:'reveal'});
+$('sDone').onclick = () => runCmd({id:'done'});
+$('sHint').onclick = () => runCmd({id:'hint'});
+$('sSpell').onclick = () => runCmd({id:'spell'});
+$('sCount').onclick = () => runCmd({id:'count'});
+$('sRight').onclick = () => runCmd({id:'right'});
+$('sWrong').onclick = () => runCmd({id:'wrong'});
+$('sTastes').onclick = () => runCmd({id:'tastes'});
+$('sServed').onclick = () => runCmd({id:'served'});
+$('sEnd').onclick = () => runCmd({id:'end'});
+$('sType').onclick = () => {
+  const w = $('typedWrap'); w.classList.toggle('hidden');
+  $('sType').classList.toggle('hot', !w.classList.contains('hidden'));
+  if(!w.classList.contains('hidden')) $('typedIn').focus();
+};
+function submitTyped(){
+  const v = $('typedIn').value.trim(); if(!v) return;
+  $('typedIn').value = '';
+  const c = asCommand(v); if(c){ runCmd(c); return; }
+  setHeard(v, false); applyAnswer(v);
+}
+$('typedGo').onclick = submitTyped;
+$('typedIn').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); submitTyped(); } });
+
+$('chips').onclick = e => {
+  const b = e.target.closest('[data-i]'); if(!b || !S.card) return;
+  const i = +b.dataset.i;
+  if(S.hit.has(i)) S.hit.delete(i); else S.hit.add(i);
+  paintChips(S.card._graded);
+};
+
+document.addEventListener('keydown', e => {
+  if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if(S.view !== 'stage') return;
+  const k = e.key.toLowerCase();
+  const map = {arrowright:'next', arrowleft:'back', r:'repeat', a:'reveal', h:'hint', ' ':'done', s:'skip', c:'right', x:'wrong'};
+  if(map[k]){ e.preventDefault(); runCmd({id: map[k]}); }
+});
+
+/* ---------- boot ---------- */
+applyTheme(LS.get('theme', 'auto'));
+loadLocal();
+S.decks.builtin = prepDeck(BUILTIN, 'builtin');
+const last = LS.get('lastDeck', 'builtin');
+S.deck = S.decks[last] || S.decks.builtin;
+renderHome();
+show('home');
+if(!SR){ $('micLbl').textContent = 'No mic'; }
+initDb();
+</script>
+
+</body>
+</html>
