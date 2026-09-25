@@ -102,6 +102,15 @@ header.top{
   line-height:1.05; letter-spacing:-.02em; margin:6px 0 0; text-wrap:balance;
 }
 .hero p{margin:8px 0 0; color:var(--ink-2); max-width:56ch}
+.deckbar{display:flex; gap:7px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  padding-top:16px; margin-bottom:-4px}
+.deckbar::-webkit-scrollbar{display:none}
+.dchip{flex:none; border:1px solid var(--line); background:var(--surface); border-radius:99px;
+  padding:8px 14px; display:flex; align-items:baseline; gap:7px; white-space:nowrap}
+.dchip b{font-family:var(--f-display); font-weight:600; font-size:13.5px}
+.dchip span{font-size:11.5px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+.dchip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink); color:var(--paper)}
+.dchip[aria-pressed="true"] span{color:var(--paper); opacity:.7}
 .stats{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
 .stat{
   border:1px solid var(--line); background:var(--surface); border-radius:var(--r-m);
@@ -338,10 +347,11 @@ textarea{width:100%; min-height:80px; border:1px solid var(--line); border-radiu
 <main class="wrap">
   <!-- HOME -->
   <section class="home" id="home">
+    <div class="deckbar" id="deckBar"></div>
     <div class="hero">
       <span class="eyebrow">Voice drill · 62 cards · 13 sections</span>
-      <h1>Know every dish by heart.</h1>
-      <p>It reads you a dish, you say the ingredients out loud, and it marks what you got. Everything you miss comes back at the end until you clear it.</p>
+      <h1 id="heroTitle">Know every dish by heart.</h1>
+      <p id="heroBody">It reads you a dish, you say the ingredients out loud, and it marks what you got. Everything you miss comes back at the end until you clear it.</p>
       <div class="stats" id="homeStats"></div>
     </div>
 
@@ -511,6 +521,10 @@ function prepDeck(raw, id){
     symbol_meaning: raw.symbol_meaning || {R:'May be raw or undercooked',V:'Vegetarian',G:'Gluten-aware'},
     sections: raw.sections.map(s => ({...s, cards: s.cards.map(c => ({...c}))}))
   };
+  d.short = (raw.title || 'Deck')
+    .replace(/^Earls\s+/i, '')
+    .split(/\s*[—–|·]\s*/)[0]
+    .trim().slice(0, 22) || 'Deck';
   d.cards = [];
   d.sections.forEach((s, si) => s.cards.forEach(c => {
     c.sectionName = s.name; c.sectionIndex = si; c.sectionNote = s.note || null;
@@ -1416,8 +1430,24 @@ function renderHome(){
   const missCards = d.cards.filter(c => (S.stats[key(c)]?.wrong || 0) > 0);
   const seen = d.cards.filter(c => S.stats[key(c)]?.seen);
   $('homeStats').innerHTML = stat(d.cards.length, 'cards') + stat(seen.length, 'studied') + stat(missCards.length, 'to redo');
+  const fr = document.querySelector('#startFull .lede b');
+  if(fr) fr.textContent = 'Full run — all ' + d.cards.length + ' cards';
   $('missesLabel').textContent = missCards.length ? 'Drill my ' + missCards.length + ' misses' : 'Drill my misses';
   $('missesSub').textContent = missCards.length ? 'Only the cards you have gotten wrong, hardest first' : 'Nothing saved yet — finish a run first';
+
+  const ids = Object.keys(S.decks);
+  const db = $('deckBar');
+  if(db){
+    db.innerHTML = ids.length < 2 ? '' : ids.map(id =>
+      '<button class="dchip" data-deck-pick="' + esc(id) + '" aria-pressed="' + (id === d.id) + '">' +
+      '<b>' + esc(S.decks[id].short) + '</b><span>' + S.decks[id].cards.length + '</span></button>').join('');
+  }
+  const spec = d.mode === 'spec';
+  const ht = $('heroTitle'), hb = $('heroBody');
+  if(ht) ht.textContent = spec ? 'Know every build by heart.' : 'Know every dish by heart.';
+  if(hb) hb.textContent = spec
+    ? 'It names a drink, you call the build out loud — measures and all — and it marks what you got. Everything you miss comes back at the end until you clear it.'
+    : 'It reads you a dish, you say the ingredients out loud, and it marks what you got. Everything you miss comes back at the end until you clear it.';
 
   const fn = $('frameNote');
   if(fn) fn.innerHTML = (isFramed && SR)
@@ -1941,6 +1971,14 @@ $('startFull').onclick = () => startRun('all');
 $('startMisses').onclick = () => startRun('misses');
 $('startReverse').onclick = () => startRun('reverse');
 $('startListen').onclick = () => { unlockAudio(); openPanel('listen'); };
+$('deckBar').onclick = e => {
+  const b = e.target.closest('[data-deck-pick]'); if(!b) return;
+  const id = b.dataset.deckPick;
+  if(!S.decks[id] || id === S.deck.id) return;
+  S.deck = S.decks[id]; LS.set('lastDeck', id);
+  renderHome(); paintMeter();
+  toast('Switched to ' + S.deck.title);
+};
 $('lPrev').onclick = () => listenJump(-1);
 $('lFwd').onclick = () => listenJump(1);
 $('lAgain').onclick = () => listenJump(0);
