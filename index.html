@@ -1,7 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
+<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -9,8 +6,7 @@
 <meta name="apple-mobile-web-app-title" content="Menu Drill">
 <meta name="theme-color" content="#142A44">
 <style>html{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-</head>
-<body>
+</head><body>
 <title>Earls Menu Drill</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -241,6 +237,8 @@ a.btn{text-decoration:none; color:inherit}
 .mic.on{animation:pulse 1.5s ease-in-out infinite}
 .mic.off{background:var(--surface); border-color:var(--line)}
 .mic.off svg{stroke:var(--ink-2)} .mic.off small{color:var(--ink-3)}
+.mic.reading{background:var(--surface-2); border-color:var(--line); animation:none}
+.mic.reading svg{stroke:var(--ink-3)} .mic.reading small{color:var(--ink-3)}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(224,84,58,.45)}50%{box-shadow:0 0 0 9px rgba(224,84,58,0)}}
 @media (prefers-reduced-motion:reduce){.mic.on{animation:none} *{transition:none !important}}
 .row-sub{display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch}
@@ -358,6 +356,10 @@ textarea{width:100%; min-height:80px; border:1px solid var(--line); border-radiu
         <div class="lede"><b id="missesLabel">Drill my misses</b><span id="missesSub">Nothing saved yet</span></div>
         <span class="kbd">Go</span>
       </button>
+      <button class="btn" id="startListen">
+        <div class="lede"><b>Listen — read them to me</b><span>No questions, no scoring. Pick the sections and it reads them out.</span></div>
+        <span class="kbd">Play</span>
+      </button>
       <button class="btn" id="startReverse">
         <div class="lede"><b>Bonus round — name the dish</b><span>It reads the ingredients, you name the item</span></div>
         <span class="kbd">Go</span>
@@ -408,6 +410,23 @@ textarea{width:100%; min-height:80px; border:1px solid var(--line); border-radiu
   </section>
 
   <!-- SUMMARY -->
+  <!-- LISTEN -->
+  <section class="stage hidden" id="listen">
+    <div class="stage-head">
+      <span class="pill" id="lSectionPill">—</span>
+      <span class="pill num" id="lPos">0 / 0</span>
+      <span class="pill" id="lShufPill" hidden>Shuffled</span>
+    </div>
+    <div>
+      <h2 class="card-title" id="lTitle">—</h2>
+      <div class="said hidden" id="lSay"></div>
+      <div class="badges" id="lBadges"></div>
+    </div>
+    <div class="ask"><span class="q" id="lAskLabel">Made with</span><span class="n num" id="lAskCount"></span></div>
+    <div class="chips" id="lChips"></div>
+    <div class="detail hidden" id="lDetail"></div>
+  </section>
+
   <section class="home hidden" id="summary">
     <div class="hero">
       <span class="eyebrow" id="sumEyebrow">Round complete</span>
@@ -424,6 +443,18 @@ textarea{width:100%; min-height:80px; border:1px solid var(--line); border-radiu
 </main>
 
 <!-- CONTROL BAR -->
+<div class="bar hidden" id="lbar">
+  <div class="bar-in">
+    <div class="row-main">
+      <button class="cbtn" id="lPrev"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><small>Back</small></button>
+      <button class="cbtn" id="lAgain"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 8-8c3 0 5.4 1.6 6.8 4"/><path d="M20 4v4.5h-4.5"/><path d="M20 12a8 8 0 0 1-8 8c-3 0-5.4-1.6-6.8-4"/><path d="M4 20v-4.5h4.5"/></svg><small>Again</small></button>
+      <button class="mic" id="lPlay"><svg viewBox="0 0 24 24" id="lPlayIcon"><path d="M8 5v14M16 5v14"/></svg><small id="lPlayLbl">Pause</small></button>
+      <button class="cbtn" id="lFwd"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg><small>Next</small></button>
+      <button class="cbtn" id="lDone"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg><small>Done</small></button>
+    </div>
+  </div>
+</div>
+
 <div class="bar" id="bar">
   <div class="bar-in">
     <div class="row-main">
@@ -661,7 +692,7 @@ const S = {
   deck: null, decks: {}, view: 'home',
   run: null,              // {queue, i, round, results:Map, mode, label}
   card: null, hit: new Set(), qtyHit: new Set(), revealed: new Set(), transcript: '',
-  saidFinal: '', saidInterim: '',
+  saidFinal: '', saidInterim: '', muteUntil: 0,
   listening: false, wantListen: false, speaking: false, autoAdvanceT: null, silenceT: null,
   settings: {rate:1.0, pass:100, autoAdvance:true, silence:10000, sayCount:true, checkQty:true, handsFree:true, sayTastes:false},
   stats: {},              // cardId -> {seen, wrong, lastPct, lastAt}
@@ -759,7 +790,7 @@ function pickVoice(){
 if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
 let speakSeq = 0;
-function stopSpeak(){ speakSeq++; try{ speechSynthesis.cancel(); }catch(e){} S.speaking = false; }
+function stopSpeak(){ speakSeq++; try{ speechSynthesis.cancel(); }catch(e){} S.speaking = false; S.muteUntil = Date.now() + 300; }
 
 function say(text, opts){
   opts = opts || {};
@@ -777,9 +808,11 @@ function say(text, opts){
     const parts = sentences.flatMap(p => p.length > 170 ? (p.match(/.{1,170}(\s|$)/g) || [p]) : [p])
       .map(p => p.trim()).filter(Boolean);
     if(!parts.length){ resolve(); return; }
-    S.speaking = true; pauseListen();
+    S.speaking = true; S.muteUntil = Infinity; pauseListen();
     let k = 0;
-    const done = () => { if(my!==speakSeq) return; S.speaking = false; resumeListen(); resolve(); };
+    const done = () => { if(my!==speakSeq) return; S.speaking = false;
+      S.muteUntil = Date.now() + 600;   // speech onend fires a touch before the audio really stops
+      resumeListen(); resolve(); };
     const go = () => {
       if(my !== speakSeq) return;
       if(k >= parts.length){ done(); return; }
@@ -809,7 +842,10 @@ function buildRec(){
   r.onstart = () => { recRunning = true; paintMic(); };
   // Sound/speech events fire before any transcript does. Use them to hold the
   // clock open while he is talking or thinking out loud, not just when words land.
-  const alive = () => { if(S.view === 'stage' && S.card && !S.card._graded) armSilence(); };
+  const alive = () => {
+    if(S.speaking || Date.now() < S.muteUntil) return;
+    if(S.view === 'stage' && S.card && !S.card._graded) armSilence();
+  };
   r.onspeechstart = alive; r.onsoundstart = alive; r.onaudiostart = alive;
   r.onresult = e => {
     let finalTxt = '', interim = '';
@@ -830,25 +866,61 @@ function buildRec(){
   r.onend = () => {
     recRunning = false; paintMic();
     // Restart fast: every millisecond here is a millisecond of you talking that nobody hears.
-    if(S.wantListen && !S.speaking && !micDenied){ setTimeout(() => startRec(), 60); }
+    if(S.wantListen && !S.speaking && !micDenied && Date.now() >= S.muteUntil){ setTimeout(() => startRec(), 60); }
   };
   return r;
 }
 function startRec(){
-  if(!SR || micDenied || recRunning || S.speaking) return;
+  if(!SR || micDenied || recRunning || S.speaking || Date.now() < S.muteUntil) return;
   if(!rec) rec = buildRec();
-  try{ rec.start(); }catch(e){ /* already started */ }
+  if(!rec) return;
+  try{ rec.start(); }
+  catch(e){ recRunning = false; rec = null; }   // stale instance: drop it, the watchdog retries
 }
-function stopRec(){ S.wantListen = false; try{ rec && rec.stop(); }catch(e){} recRunning = false; paintMic(); }
-function pauseListen(){ if(recRunning){ recPausedBySpeech = true; try{ rec.abort(); }catch(e){} } }
+function stopRec(){ S.wantListen = false; stopWatchdog(); try{ rec && rec.stop(); }catch(e){} recRunning = false; paintMic(); }
+/* The mic must be genuinely off while the app is talking. A dish name like
+   "Chips & Salsa" contains its own ingredients, so anything overheard while
+   reading gets scored as if you had said it. */
+function pauseListen(){
+  recPausedBySpeech = true;
+  try{ if(rec) rec.abort(); }catch(e){}
+  rec = null;              // throw the instance away so nothing buffered survives
+  recRunning = false;
+  paintMic();
+}
 function resumeListen(){
-  if(recPausedBySpeech || S.wantListen){ recPausedBySpeech = false; if(S.wantListen) setTimeout(startRec, 220); }
+  recPausedBySpeech = false;
+  if(!S.wantListen || micDenied) return;
+  // wait out the whole mute tail — scheduling inside it just bounces off the guard
+  const wait = Math.max(250, (S.muteUntil - Date.now()) + 80);
+  setTimeout(() => {
+    if(S.speaking || Date.now() < S.muteUntil) return;
+    startRec();
+  }, wait);
 }
+
+/* Belt and braces: a missed restart used to leave the mic silently dead.
+   This notices within a second or so and starts it again. */
+let watchdog = null;
+function startWatchdog(){
+  if(watchdog) return;
+  watchdog = setInterval(() => {
+    paintMic();
+    if(!S.wantListen || micDenied || S.speaking) return;
+    if(Date.now() < S.muteUntil) return;
+    if(recRunning) return;
+    startRec();
+  }, 1000);
+}
+function stopWatchdog(){ if(watchdog){ clearInterval(watchdog); watchdog = null; } }
 function paintMic(){
   const m = $('cMic');
   m.classList.toggle('on', recRunning && S.wantListen);
   m.classList.toggle('off', !S.wantListen);
-  $('micLbl').textContent = !SR ? 'No mic' : (S.wantListen ? (recRunning ? 'Listening' : 'Waiting') : 'Talk');
+  const muted = S.speaking || Date.now() < S.muteUntil;
+  m.classList.toggle('reading', muted && S.wantListen);
+  $('micLbl').textContent = !SR ? 'No mic'
+    : (S.wantListen ? (muted ? 'Reading' : (recRunning ? 'Listening' : 'Waiting')) : 'Talk');
 }
 
 /* ---------- commands ---------- */
@@ -910,6 +982,7 @@ function saidSoFar(interim){
   return (S.saidFinal + ' ' + (interim !== undefined ? interim : S.saidInterim)).replace(/\s+/g,' ').trim();
 }
 function onHeard(text, isFinal){
+  if(S.speaking || Date.now() < S.muteUntil) return;   // that was the app's own voice
   if(S.view !== 'stage'){
     if(isFinal){ const c = asCommand(text); if(c) runCmd(c); }
     return;
@@ -1011,7 +1084,7 @@ function startRun(mode, arg){
   if(mode === 'reverse') S.run.queue = shuffle(S.deck.cards.filter(c => c.type === 'ingredients'));
   unlockAudio();
   show('stage');
-  if(SR && !micDenied){ S.wantListen = true; startRec(); }
+  if(SR && !micDenied){ S.wantListen = true; startWatchdog(); startRec(); }
   paintMic();
   loadCard(0, true);
 }
@@ -1031,6 +1104,7 @@ function loadCard(i, speakIt){
   setHeard('', false);
   $('heardTxt').innerHTML = '<em>' + (SR && !micDenied ? 'Listening — say the ingredients.' : 'Use the buttons below, or type your answer.') + '</em>';
   if(speakIt !== false) promptCard();
+  else armSilence();
 }
 function promptCard(){
   const c = S.card, r = S.run;
@@ -1110,7 +1184,7 @@ function endRound(){
     acts.appendChild(btnEl('primary', 'Retry these ' + missed.length, 'Round ' + (r.round + 1) + ' — only what you missed', 'Go', () => {
       S.run = {queue: missed.map(m => m.card), i:0, round: r.round + 1, results:new Map(),
                mode:r.mode, reverse:r.reverse, label:r.label};
-      show('stage'); if(SR && !micDenied){ S.wantListen = true; startRec(); } loadCard(0, true);
+      show('stage'); if(SR && !micDenied){ S.wantListen = true; startWatchdog(); startRec(); } loadCard(0, true);
     }));
   }
   acts.appendChild(btnEl('', 'Run it again from the top', r.label + ' — all ' + (r.mode==='section'||r.mode==='misses'||r.mode==='reverse' ? results.length : S.deck.cards.length) + ' cards', 'Go', () => startRun(r.mode, r.arg)));
@@ -1128,6 +1202,20 @@ function endRound(){
 
 /* ---------- command runner ---------- */
 function runCmd(cmd){
+  if(S.view === 'listen'){
+    switch(cmd.id){
+      case 'next': case 'skip':      listenJump(1); return;
+      case 'back':                   listenJump(-1); return;
+      case 'repeat':                 listenJump(0); return;
+      case 'pause':                  if(S.listen && S.listen.playing) listenToggle(); return;
+      case 'resume': case 'done':    if(S.listen && !S.listen.playing) listenToggle(); return;
+      case 'slower': S.settings.rate = Math.max(.6, +(S.settings.rate - .15).toFixed(2)); saveSettings(); return;
+      case 'faster': S.settings.rate = Math.min(1.6, +(S.settings.rate + .15).toFixed(2)); saveSettings(); return;
+      case 'end': case 'home':       stopListen(); show('home'); return;
+      case 'score': if(S.listen) say('Card ' + (S.listen.i + 1) + ' of ' + S.listen.queue.length + '.'); return;
+      default: return;
+    }
+  }
   const c = S.card, r = S.run;
   switch(cmd.id){
     case 'next':
@@ -1146,7 +1234,7 @@ function runCmd(cmd){
     case 'slower': S.settings.rate = Math.max(.6, +(S.settings.rate - .15).toFixed(2)); saveSettings(); say('Slower.'); return;
     case 'faster': S.settings.rate = Math.min(1.6, +(S.settings.rate + .15).toFixed(2)); saveSettings(); say('Faster.'); return;
     case 'pause': stopSpeak(); stopRec(); toast('Paused. Tap the mic to start again.'); return;
-    case 'resume': S.wantListen = true; startRec(); toast('Listening.'); return;
+    case 'resume': S.wantListen = true; startWatchdog(); startRec(); toast('Listening.'); return;
     case 'score': sayScore(); return;
     case 'tastes': if(c?.tastes_like) say('Tastes like: ' + c.tastes_like); else say('No description on this card.'); showDetail(); return;
     case 'served': if(c?.served_with) say('Served with: ' + c.served_with); else say('Nothing special. Standard service.'); showDetail(); return;
@@ -1348,11 +1436,165 @@ function renderHome(){
   }).join('');
 }
 
+
+/* ---------- listen mode: it reads, you just listen ---------- */
+let listenGapT = null;
+
+function listenPrefs(){
+  const d = S.settings;
+  if(!d.lSecs) d.lSecs = {};
+  if(d.lShuffle === undefined) d.lShuffle = false;
+  if(d.lExtras === undefined) d.lExtras = true;
+  if(d.lGap === undefined) d.lGap = 3000;
+  return d;
+}
+function listenSel(){
+  const p = listenPrefs();
+  let sel = p.lSecs[S.deck.id];
+  if(!Array.isArray(sel)) sel = S.deck.sections.map((_, i) => i);   // first time: everything
+  return sel.filter(i => i >= 0 && i < S.deck.sections.length);
+}
+function listenCount(){
+  const sel = new Set(listenSel());
+  return S.deck.sections.reduce((n, sec, i) => n + (sel.has(i) ? sec.cards.length : 0), 0);
+}
+
+function panelListen(){
+  const p = listenPrefs(), sel = new Set(listenSel());
+  return '<h2>Listen</h2>' +
+    '<p class="sub">It reads each card out — the name, then the build. No questions and nothing scored. ' +
+    'Good for the drive in or setting up the bar.</p>' +
+    '<div class="grp"><span class="eyebrow">What to read</span>' +
+    '<div class="row-sub" style="margin-bottom:8px">' +
+    '<button class="sbtn" id="lAll">Select all</button><button class="sbtn" id="lNone">Clear</button></div>' +
+    '<div class="sec-list">' + S.deck.sections.map((sec, i) =>
+      '<button class="sec-row" data-lsec="' + i + '"><span class="dot ' + (sel.has(i) ? 'done' : '') + '"></span>' +
+      '<span class="nm">' + esc(sec.name) + '</span><span class="ct num">' + sec.cards.length + '</span></button>').join('') +
+    '</div></div>' +
+    '<div class="grp"><span class="eyebrow">How</span>' +
+    optSeg('Shuffle', 'Mix them up instead of menu order.', 'lShuffle', [[true,'On'],[false,'Off']], p.lShuffle) +
+    optSeg('Read the extras', 'Glass and garnish on cocktails, the guest description on food.', 'lExtras', [[true,'On'],[false,'Off']], p.lExtras) +
+    optSeg('Gap between cards', 'Breathing room to say it back to yourself.', 'lGap', [[1500,'1.5s'],[3000,'3s'],[6000,'6s']], p.lGap) +
+    '</div>' +
+    '<button class="btn primary" id="lGo"><div class="lede"><b>Start listening</b>' +
+    '<span id="lCount">' + listenCount() + ' cards</span></div><span class="kbd">Play</span></button>';
+}
+
+function beginListen(){
+  const sel = new Set(listenSel());
+  let q = [];
+  S.deck.sections.forEach((sec, i) => { if(sel.has(i)) q = q.concat(sec.cards); });
+  if(!q.length){ toast('Pick at least one section first.'); return; }
+  if(listenPrefs().lShuffle) q = shuffle(q);
+  S.listen = {queue: q, i: 0, playing: true};
+  closePanel();
+  unlockAudio();
+  show('listen');
+  if(SR && !micDenied){ S.wantListen = true; startWatchdog(); }   // commands land in the gaps
+  paintListen();
+  playListen();
+}
+
+function paintListen(){
+  const L = S.listen; if(!L) return;
+  const c = L.queue[L.i];
+  const spec = S.deck.mode === 'spec';
+  $('lSectionPill').textContent = c.sectionName;
+  $('lPos').textContent = (L.i + 1) + ' / ' + L.queue.length;
+  $('lShufPill').hidden = !listenPrefs().lShuffle;
+  $('lTitle').textContent = c.type === 'list' ? c.prompt : c.name;
+  $('lSay').classList.toggle('hidden', !c.pronounced);
+  if(c.pronounced) $('lSay').textContent = 'Pronounced ' + c.pronounced;
+  $('lBadges').innerHTML = (c.symbols || []).map(x =>
+    '<span class="badge"><i>' + esc(x) + '</i>' + esc(S.deck.symbol_meaning[x] || x) + '</span>').join('');
+  $('lAskLabel').textContent = c.type === 'list' ? 'Items' : 'Made with';
+  $('lAskCount').textContent = c.answers.length + (c.answers.length === 1 ? ' item' : ' items');
+  $('lChips').innerHTML = c.answers.map((a, i) => {
+    const q = spec && c.qty ? c.qty[i] : null;
+    return '<span class="chip hit">' + (q && q.raw ? '<span class="qty">' + esc(q.raw) + '</span>' : '') + esc(a) + '</span>';
+  }).join('');
+  const rows = [];
+  if(c.technique) rows.push(['Technique', c.technique]);
+  if(c.glassware) rows.push(['Glassware', c.glassware]);
+  if(c.garnish) rows.push(['Garnish', c.garnish]);
+  if(c.tastes_like) rows.push([spec ? 'Customer expectation' : 'Tastes like', c.tastes_like]);
+  if(c.served_with && !spec) rows.push(['Served with', c.served_with]);
+  $('lDetail').classList.toggle('hidden', !rows.length);
+  $('lDetail').innerHTML = rows.map(([k, v]) =>
+    '<div><span class="eyebrow">' + esc(k) + '</span><p>' + esc(v) + '</p></div>').join('');
+  paintListenBtn();
+}
+function paintListenBtn(){
+  const on = S.listen && S.listen.playing;
+  $('lPlayLbl').textContent = on ? 'Pause' : 'Play';
+  $('lPlayIcon').innerHTML = on ? '<path d="M8 5v14M16 5v14"/>' : '<path d="M7 4l12 8-12 8z"/>';
+  $('lPlay').classList.toggle('off', !on);
+}
+
+function listenText(c){
+  const spec = S.deck.mode === 'spec';
+  const p = listenPrefs();
+  let t = (c.type === 'list' ? c.prompt : c.name) + '. ';
+  if(c.pronounced) t += 'Pronounced ' + c.pronounced.replace(/·/g, ' ') + '. ';
+  t += (c.type === 'list' ? '' : 'Made with: ');
+  t += c.answers.map((a, i) => {
+    const q = spec && c.qty ? c.qty[i] : null;
+    return q ? (sayQty(q) + ' ' + a) : a;
+  }).join(', ') + '.';
+  if(p.lExtras){
+    if(c.glassware) t += ' Glass: ' + c.glassware;
+    if(c.garnish) t += ' Garnish: ' + c.garnish;
+    if(!spec && c.tastes_like) t += ' Tastes like: ' + c.tastes_like;
+  }
+  return t;
+}
+
+function playListen(){
+  const L = S.listen; if(!L || !L.playing) return;
+  clearTimeout(listenGapT);
+  const c = L.queue[L.i];
+  paintListen();
+  say(listenText(c)).then(() => {
+    if(!S.listen || !S.listen.playing || S.listen.queue[S.listen.i] !== c) return;
+    listenGapT = setTimeout(() => {
+      if(!S.listen || !S.listen.playing) return;
+      if(S.listen.i + 1 >= S.listen.queue.length){ endListen(); return; }
+      S.listen.i++; playListen();
+    }, listenPrefs().lGap);
+  });
+}
+function listenJump(d){
+  const L = S.listen; if(!L) return;
+  clearTimeout(listenGapT); stopSpeak();
+  L.i = Math.max(0, Math.min(L.queue.length - 1, L.i + d));
+  L.playing = true;
+  playListen();
+}
+function listenToggle(){
+  const L = S.listen; if(!L) return;
+  L.playing = !L.playing;
+  if(L.playing) playListen();
+  else { clearTimeout(listenGapT); stopSpeak(); paintListenBtn(); }
+}
+function endListen(){
+  const L = S.listen; if(!L) return;
+  L.playing = false; paintListenBtn();
+  say('That is all ' + L.queue.length + ' of them.').then(() => {});
+  toast('Finished — ' + L.queue.length + ' cards read.');
+}
+function stopListen(quiet){
+  clearTimeout(listenGapT);
+  if(S.listen){ S.listen.playing = false; S.listen = null; }
+  if(!quiet) stopSpeak();
+}
+
 /* ---------- views ---------- */
 function show(v){
   S.view = v;
-  ['home', 'stage', 'summary'].forEach(x => $(x).classList.toggle('hidden', x !== v));
+  ['home', 'stage', 'summary', 'listen'].forEach(x => $(x).classList.toggle('hidden', x !== v));
   $('bar').classList.toggle('hidden', v !== 'stage');
+  $('lbar').classList.toggle('hidden', v !== 'listen');
+  if(v !== 'listen') stopListen(true);
   if(v !== 'stage'){ clearTimeout(S.silenceT); clearTimeout(S.autoAdvanceT); }
   if(v === 'home'){ stopSpeak(); stopRec(); S.run = null; S.card = null; renderHome(); paintMeter(); }
   window.scrollTo(0, 0);
@@ -1361,7 +1603,8 @@ function show(v){
 /* ---------- panels ---------- */
 function openPanel(which){
   const b = $('panelBody');
-  b.innerHTML = which === 'commands' ? panelCommands()
+  b.innerHTML = which === 'listen'   ? panelListen()
+              : which === 'commands' ? panelCommands()
               : which === 'sections' ? panelSections()
               : which === 'decks'    ? panelDecks()
               : panelMenu();
@@ -1465,6 +1708,19 @@ function wirePanel(which){
   $('panelBody').querySelectorAll('[data-deck]').forEach(el => el.onclick = () => {
     S.deck = S.decks[el.dataset.deck]; LS.set('lastDeck', S.deck.id); closePanel(); show('home'); toast('Switched to ' + S.deck.title);
   });
+  if(which === 'listen'){
+    const p = listenPrefs();
+    const setSel = arr => { p.lSecs[S.deck.id] = arr; saveSettings(); openPanel('listen'); };
+    $('panelBody').querySelectorAll('[data-lsec]').forEach(el => el.onclick = () => {
+      const i = +el.dataset.lsec;
+      const cur = new Set(listenSel());
+      if(cur.has(i)) cur.delete(i); else cur.add(i);
+      setSel([...cur].sort((a, b) => a - b));
+    });
+    const all = $('lAll'); if(all) all.onclick = () => setSel(S.deck.sections.map((_, i) => i));
+    const none = $('lNone'); if(none) none.onclick = () => setSel([-1]);   // nothing selected
+    const go = $('lGo'); if(go) go.onclick = beginListen;
+  }
   if(which === 'decks') wireImport();
 }
 function applyTheme(v){
@@ -1684,6 +1940,12 @@ $('scrim').onclick = closePanel;
 $('startFull').onclick = () => startRun('all');
 $('startMisses').onclick = () => startRun('misses');
 $('startReverse').onclick = () => startRun('reverse');
+$('startListen').onclick = () => { unlockAudio(); openPanel('listen'); };
+$('lPrev').onclick = () => listenJump(-1);
+$('lFwd').onclick = () => listenJump(1);
+$('lAgain').onclick = () => listenJump(0);
+$('lPlay').onclick = listenToggle;
+$('lDone').onclick = () => { stopListen(); show('home'); };
 $('secList').onclick = e => { const b = e.target.closest('[data-sec]'); if(b) startRun('section', +b.dataset.sec); };
 
 $('cMic').onclick = async () => {
@@ -1692,7 +1954,7 @@ $('cMic').onclick = async () => {
   if(!SR){ showMicHelp({reason:'no-sr'}); return; }
   const got = await requestMic();
   if(!got.ok){ micDenied = true; paintMic(); showMicHelp(got); return; }
-  micDenied = false; S.wantListen = true; startRec(); paintMic();
+  micDenied = false; S.wantListen = true; startWatchdog(); startRec(); paintMic();
 };
 $('cBack').onclick = () => runCmd({id:'back'});
 $('cNext').onclick = () => runCmd({id:'next'});
